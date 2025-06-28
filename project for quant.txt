@@ -1,0 +1,16 @@
+project:
+Objective:
+
+Build an AI tool that predicts stock performance (rise or dip) by combining:
+
+1. News sentiment
+
+2. Social media trends
+
+3. User prompt context
+
+4. Quantitative indicators & price patterns
+
+
+Output: Prediction graphs, not chat-style text, show a list of stocks when user clicks on one they will be shown its graph and score rating for the next 10 years how well it will perform
+

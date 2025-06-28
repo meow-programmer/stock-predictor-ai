@@ -1,0 +1,57 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Ask the user for the stock symbol (e.g., 'ZBH')
+stock_symbol = input("Enter stock symbol (e.g., ZBH): ").upper()
+
+# Build file path based on input
+file_path = f'data/cleaned/{stock_symbol}.xlsx'
+
+# Read the Excel file
+df = pd.read_excel(file_path)
+
+# Plot High and Low Prices
+plt.figure(figsize=(12, 6))
+plt.plot(df['Date'], df['High_' + stock_symbol], label='High Price', color='blue')
+plt.plot(df['Date'], df['Low_' + stock_symbol], label='Low Price', color='orange')
+
+# Titles and labels
+plt.xlabel('Date')
+plt.ylabel('Price')
+plt.title(f"High and Low prices for {stock_symbol} over time")
+plt.legend()
+
+# Annotations
+max_price = df['High_' + stock_symbol].max()
+max_date = df['High_' + stock_symbol].idxmax()
+plt.annotate(
+    'Highest point',
+    xy=(df['Date'][max_date], max_price),
+    xytext=(df['Date'][max_date], max_price + 10),
+    arrowprops=dict(facecolor='green', arrowstyle='->'),
+    fontsize=8,
+    color='green'
+)
+
+min_price = df['Low_' + stock_symbol].min()
+min_date = df['Low_' + stock_symbol].idxmin()
+plt.annotate(
+    'Lowest point',
+    xy=(df['Date'][min_date], min_price),
+    xytext=(df['Date'][min_date], min_price - 10),
+    arrowprops=dict(facecolor='red', arrowstyle='->'),
+    fontsize=8,
+    color='red'
+)
+
+plt.show()
+
+
+
+
+
+
+
+
+
+

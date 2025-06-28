@@ -1,0 +1,6 @@
+1. Stock listing:
+Their current prices and future estimated prices to be predicted by mathematical modelling. Upon clicking you are entered into a dropdown view where the graph for the next ten years can be seen as predicted.
+
+Additional general information will be given as well upon clicking a stock
+
+2. 

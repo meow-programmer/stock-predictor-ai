@@ -1,0 +1,70 @@
+Here’s a structured learning path to get you started with algorithmic trading, quantitative finance, and AI-driven investing:
+
+1. Mathematical Foundations
+Books:
+
+Mathematics for Machine Learning – Deisenroth, Faisal, Ong
+
+The Elements of Statistical Learning – Hastie, Tibshirani, Friedman
+
+Courses:
+
+Khan Academy (Linear Algebra, Probability & Statistics)
+
+MIT OpenCourseWare – Introduction to Probability and Statistics
+
+2. Programming (Python & Libraries)
+Books:
+
+Python for Data Analysis – Wes McKinney
+
+Courses:
+
+CS50: Introduction to Computer Science (Harvard, free)
+
+Python for Finance (Udemy)
+
+Fast.ai – Introduction to Machine Learning
+
+3. Finance & Market Structure
+Books:
+
+Quantitative Finance for Dummies – Steve Bell
+
+Options, Futures, and Other Derivatives – John C. Hull
+
+A Man for All Markets – Edward O. Thorp
+
+Courses:
+
+Yale’s Financial Markets (Coursera, free)
+
+CFA Institute (if you want deep finance knowledge)
+
+4. Algorithmic Trading & Quantitative Strategies
+Books:
+
+Quantitative Trading – Ernie Chan
+
+Algorithmic Trading: Winning Strategies and Their Rationale – Ernie Chan
+
+Advances in Financial Machine Learning – Marcos López de Prado
+
+Courses:
+
+EPAT (Executive Program in Algo Trading) by QuantInsti
+
+Udacity’s AI for Trading
+
+5. AI & Machine Learning in Trading
+Books:
+
+Machine Learning for Asset Managers – Marcos López de Prado
+
+Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow – Aurélien Géron
+
+Courses:
+
+Coursera: AI for Trading by WorldQuant University
+
+Google’s Machine Learning Crash Course

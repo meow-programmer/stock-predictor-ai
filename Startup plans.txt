@@ -1,0 +1,2 @@
+1. AI stock prediction model
+2. Meteor mining

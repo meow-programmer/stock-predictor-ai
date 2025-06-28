@@ -1,0 +1,35 @@
+"""
+17 june - Parsed NASDAQ tickers. Fixed errors using AI bot.
+
+18 june
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
