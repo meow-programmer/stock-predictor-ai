@@ -1,12 +1,14 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
+import os
 
 # Ask the user for the stock symbol (e.g., 'ZBH')
 stock_symbol = input("Enter stock symbol (e.g., ZBH): ").upper()
 
 # Build file path based on input
-file_path = f'data/cleaned/{stock_symbol}.xlsx'
+base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+file_path = os.path.join(base_dir, 'data', 'cleaned', f'{stock_symbol}.xlsx')
 
 # Read the Excel file
 df = pd.read_excel(file_path)
