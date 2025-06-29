@@ -21,6 +21,7 @@ df['EMA'] = df['Close_'+stock_symbol].ewm(span=20, adjust=False).mean()
 
 show_extrema = input("Do you want to highlight local dips and peaks? (yes/no): ").lower().strip()
 
+plt.figure(figsize=(12, 6))
 if show_extrema == "yes":
     print("\nLocal Peaks = short-term high points before price drops.")
     print("Local Dips  = short-term low points before price rises again.\n")
@@ -36,7 +37,6 @@ if show_extrema == "yes":
 
 
 # Plot High and Low Prices
-plt.figure(figsize=(12, 6))
 plt.plot(df['Date'], df['High_' + stock_symbol], label='High Price', color='blue')
 plt.plot(df['Date'], df['Low_' + stock_symbol], label='Low Price', color='orange')
 
