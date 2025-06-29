@@ -30,8 +30,8 @@ if show_extrema == "yes":
     dips, _ = find_peaks(-df[close_col], distance=5)
 
     # plot local dips and peaks
-    plt.scatter(df.index[peaks], df[close_col][peaks], color='green', marker='^', label='Peaks')
-    plt.scatter(df.index[dips], df[close_col][dips], color='red', marker='v', label='Dips')
+    plt.scatter(df['Date'][peaks], df[close_col][peaks], color='green', marker='^', label='Peaks')
+    plt.scatter(df['Date'][dips], df[close_col][dips], color='red', marker='v', label='Dips')
 
 
 
