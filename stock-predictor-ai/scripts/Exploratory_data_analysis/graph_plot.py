@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
 import os
 
-# Ask the user for the stock symbol (e.g., 'ZBH')
+# Ask the user for the stock symbol (e.g. 'ZBH')
 stock_symbol = input("Enter stock symbol (e.g., ZBH): ").upper()
 
 # Build file path based on input
