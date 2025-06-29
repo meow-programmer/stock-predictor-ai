@@ -7,6 +7,8 @@ import os
 print("Choose an option:")
 print("1. Download 100 random S&P 500 stocks")
 print("2. Download a specific stock")
+print("3. Exit")
+
 
 choice = input("Enter 1 or 2: ").strip()
 
@@ -26,12 +28,17 @@ if choice == '1':
 
     # Step 3: Download all
     for ticker in random_100:
+        file_path = f'data/raw/{ticker}.xlsx'
+        if os.path.exists(file_path):
+            print(f"[=] Skipped (already exists): {ticker}")
+            continue
         try:
             df = yf.download(ticker, period='max')
             df.to_excel(f'data/raw/{ticker}.xlsx')
             print(f"[+] Saved: {ticker}")
         except Exception as e:
             print(f"[!] Failed: {ticker} - {e}")
+    
 
 elif choice == '2':
     ticker = input("Enter stock ticker (e.g., TSLA, NVDA, AMZN): ").upper().replace('.', '-')
@@ -44,3 +51,4 @@ elif choice == '2':
 
 else:
     print("Invalid input. Please run again and enter 1 or 2.")
+
