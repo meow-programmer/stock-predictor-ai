@@ -87,8 +87,8 @@ if choice == '2':
     plt.show()
 
 elif choice == '3':
-    print("what does volatility mean?")
-    print("it is the measure of how stable your stock is over time. A stock that moves up and down rapidly is highly volatile, while one that moves steadily is less volatile.")
+    print("What does volatility mean?")
+    print("It is the measure of how stable your stock is over time. A stock that moves up and down rapidly is highly volatile, while one that moves steadily is less volatile.")
     
     stock = input("Enter which stock you want to see volatility table:").upper()
     file_path = os.path.join(cleaned_path, f'{stock}.xlsx')
@@ -97,41 +97,46 @@ elif choice == '3':
     # Calculate volatility
     df['Volatility'] = df['Close_' + stock].rolling(window=20).std()
 
-    # Display stats
+    # Create summary statistics DataFrame
     volatility_stats_df = pd.DataFrame({
         'Statistic': ['Mean Volatility', 'Max Volatility', 'Min Volatility', 'Latest Volatility'],
         'Value': [
-        df['Volatility'].mean(),
-        df['Volatility'].max(),
-        df['Volatility'].min(),
-        df['Volatility'].iloc[-1]
+            df['Volatility'].mean(),
+            df['Volatility'].max(),
+            df['Volatility'].min(),
+            df['Volatility'].iloc[-1]
         ]
-    })
+    }).round(2)
 
-    print("\nVolatility stats (20 day rolling window):")
-    for k, v in volatility_stats_df.items():
-        print(f"{k}: {v:.2f}")
+    # === Interactive Mode: Allow both plots to show at once ===
+    plt.ion()  # Enable interactive mode
 
-    # Graph Plot
-    plt.figure(figsize=(12, 6))
+    # ----- Window 1: Volatility Graph -----
+    fig1 = plt.figure(figsize=(12, 5))
     plt.plot(df['Date'], df['Volatility'], label='Volatility (20-day STD)', color='darkred')
     plt.xlabel("Date")
     plt.ylabel("Volatility")
-    plt.title(f"{stock} Volatility over time")
+    plt.title(f"{stock} Volatility Over Time")
     plt.legend()
+    plt.grid(True)
     plt.tight_layout()
-    plt.show()
+    fig1.canvas.manager.set_window_title(f"{stock} Volatility Graph")
+    fig1.show()
 
-    # Table plot
-    fig, ax = plt.subplots(figsize=(6, 2))  # Adjust size as needed
-    ax.axis('off')  # Hide axes
-    table = pd.plotting.table(ax, volatility_stats_df, loc='center', colWidths=[0.4, 0.3])
+    # ----- Window 2: Volatility Table -----
+    fig2, ax2 = plt.subplots(figsize=(5, 3))
+    ax2.axis('off')
+    table = pd.plotting.table(ax2, volatility_stats_df, loc='center', colWidths=[0.5, 0.3])
     table.auto_set_font_size(False)
     table.set_fontsize(10)
-    table.scale(1.2, 1.5)  # Adjust table size
-    plt.title(f"{stock} Volatility Summary Table", fontsize=12)
+    table.scale(1.2, 1.5)
+    ax2.set_title(f"{stock} Volatility Summary", fontsize=12, pad=20)
     plt.tight_layout()
-    plt.show()
+    fig2.canvas.manager.set_window_title(f"{stock} Volatility Table")
+    fig2.show()
+
+
+
 
 
 else:
