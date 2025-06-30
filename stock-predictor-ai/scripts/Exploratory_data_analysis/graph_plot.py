@@ -88,29 +88,33 @@ if choice == '2':
 
 elif choice == '3':
     print("what does volatility mean?")
-    print("it is the measure of how stable your stock is over time, a stock the moves upa and down is highly volatile and the stock that moves steadily is low.")
-    stock=input("Enter which stock you want to see volatility table:")
+    print("it is the measure of how stable your stock is over time. A stock that moves up and down rapidly is highly volatile, while one that moves steadily is less volatile.")
     
-    # calculating volatility
-    df['Volatility'] = df['Close_' + stock_symbol].rolling(window=20).std()
+    stock = input("Enter which stock you want to see volatility table:").upper()
+    file_path = os.path.join(cleaned_path, f'{stock}.xlsx')
+    df = pd.read_excel(file_path)
 
-    #basic stats for display
+    # Calculate volatility
+    df['Volatility'] = df['Close_' + stock].rolling(window=20).std()
+
+    # Display stats
     volatility_stats = {
         'Mean Volatility': df['Volatility'].mean(),
         'Max Volatility': df['Volatility'].max(),
         'Min Volatility': df['Volatility'].min(),
         'Latest Volatility': df['Volatility'].iloc[-1]
     }
+
     print("\nVolatility stats (20 day rolling window):")
-    for k,v in volatility_stats:
+    for k, v in volatility_stats.items():
         print(f"{k}: {v:.2f}")
 
+    # Plot
     plt.figure(figsize=(12, 6))
-    plt.plot(df['Date'], df['Volatility'], label='Volatility (20 day STD)', color='darkred')
-
+    plt.plot(df['Date'], df['Volatility'], label='Volatility (20-day STD)', color='darkred')
     plt.xlabel("Date")
     plt.ylabel("Volatility")
-    plt.title(f"{stock_symbol} Volatility over time")
+    plt.title(f"{stock} Volatility over time")
     plt.legend()
     plt.tight_layout()
     plt.show()
