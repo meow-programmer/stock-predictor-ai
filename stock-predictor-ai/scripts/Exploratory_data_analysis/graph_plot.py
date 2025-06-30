@@ -11,7 +11,8 @@ cleaned_path = os.path.join(base_dir, 'data', 'cleaned')
 print("Choose an option:")
 print("1. View single stock")
 print("2. Compare two stocks")
-choice = input("Enter 1 or 2: ").strip()
+print("3. View volatility table and volatility graph for specific stock")
+choice = input("Enter 1, 2 or 3: ").strip()
 
 if choice == '1':
     stock_symbol = input("Enter stock symbol (e.g., ZBH): ").upper()
@@ -64,7 +65,7 @@ if choice == '1':
     plt.tight_layout()
     plt.show()
 
-elif choice == '2':
+if choice == '2':
     stock1 = input("Enter first stock symbol: ").upper()
     stock2 = input("Enter second stock symbol: ").upper()
 
@@ -85,8 +86,39 @@ elif choice == '2':
     plt.tight_layout()
     plt.show()
 
+elif choice == '3':
+    print("what does volatility mean?")
+    print("it is the measure of how stable your stock is over time, a stock the moves upa and down is highly volatile and the stock that moves steadily is low.")
+    stock=input("Enter which stock you want to see volatility table:")
+    
+    # calculating volatility
+    df['Volatility'] = df['Close_' + stock_symbol].rolling(window=20).std()
+
+    #basic stats for display
+    volatility_stats = {
+        'Mean Volatility': df['Volatility'].mean(),
+        'Max Volatility': df['Volatility'].max(),
+        'Min Volatility': df['Volatility'].min(),
+        'Latest Volatility': df['Volatility'].iloc[-1]
+    }
+    print("\nVolatility stats (20 day rolling window):")
+    for k,v in volatility_stats:
+        print(f"{k}: {v:.2f}")
+
+    plt.figure(figsize=(12, 6))
+    plt.plot(df['Date'], df['Volatility'], label='Volatility (20 day STD)', color='darkred')
+
+    plt.xlabel("Date")
+    plt.ylabel("Volatility")
+    plt.title(f"{stock_symbol} Volatility over time")
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+
 
 else:
     print("Invalid input.")
+
 
 
