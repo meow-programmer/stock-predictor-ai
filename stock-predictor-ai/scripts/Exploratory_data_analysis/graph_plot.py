@@ -98,18 +98,21 @@ elif choice == '3':
     df['Volatility'] = df['Close_' + stock].rolling(window=20).std()
 
     # Display stats
-    volatility_stats = {
-        'Mean Volatility': df['Volatility'].mean(),
-        'Max Volatility': df['Volatility'].max(),
-        'Min Volatility': df['Volatility'].min(),
-        'Latest Volatility': df['Volatility'].iloc[-1]
-    }
+    volatility_stats_df = pd.DataFrame({
+        'Statistic': ['Mean Volatility', 'Max Volatility', 'Min Volatility', 'Latest Volatility'],
+        'Value': [
+        df['Volatility'].mean(),
+        df['Volatility'].max(),
+        df['Volatility'].min(),
+        df['Volatility'].iloc[-1]
+        ]
+    })
 
     print("\nVolatility stats (20 day rolling window):")
-    for k, v in volatility_stats.items():
+    for k, v in volatility_stats_df.items():
         print(f"{k}: {v:.2f}")
 
-    # Plot
+    # Graph Plot
     plt.figure(figsize=(12, 6))
     plt.plot(df['Date'], df['Volatility'], label='Volatility (20-day STD)', color='darkred')
     plt.xlabel("Date")
@@ -119,6 +122,16 @@ elif choice == '3':
     plt.tight_layout()
     plt.show()
 
+    # Table plot
+    fig, ax = plt.subplots(figsize=(6, 2))  # Adjust size as needed
+    ax.axis('off')  # Hide axes
+    table = pd.plotting.table(ax, volatility_stats_df, loc='center', colWidths=[0.4, 0.3])
+    table.auto_set_font_size(False)
+    table.set_fontsize(10)
+    table.scale(1.2, 1.5)  # Adjust table size
+    plt.title(f"{stock} Volatility Summary Table", fontsize=12)
+    plt.tight_layout()
+    plt.show()
 
 
 else:
