@@ -135,6 +135,7 @@ elif choice == '3':
     fig2.canvas.manager.set_window_title(f"{stock} Volatility Table")
     fig2.show()
 
+    input("Press Enter to exit...")
 
 
 
