@@ -10,7 +10,7 @@ AI_quant/
 │    ├──
 │    ├──
 │    ├──
-│    ├── 
+│    └──
 ├── stock-predictor-ai/
 │    ├── data/
 │    │   ├── raw/                     # Original stock data (CSV, JSON, etc.)
