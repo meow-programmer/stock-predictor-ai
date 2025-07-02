@@ -4,30 +4,29 @@
 stock-prediction-ai/
 │
 ├── README.md                     # Project overview (clean, technical)
+├── requirements.txt              # Python dependencies
 │
-├── requirements.txt             # Python dependencies
-├──
 ├── notes/
-│    ├── project_reflections.txt      # personal notes, progress journal
+│    ├── project_reflections.txt  # personal notes, progress journal
 │    ├── experimentation.txt 
 │    └── things_to_study.txt
 ├── data/
-│    raw/                     # Original stock data (CSV, JSON, etc.)
-│   └── cleaned/                 # Preprocessed, formatted data
+│    raw/                          # Original stock data (CSV, JSON, etc.)
+│    └── cleaned/                 # Preprocessed, formatted data
 │
 ├── scripts/
-│   ├── eda/                     # Notebooks or Python scripts for EDA
-│   ├── models/                  # ML models (regression, LSTM, etc.)
-│   ├── sentiment/              # Scripts for news/text analysis
-│   └── utils/                  # Helper functions (data loading, plotting)
+│   ├── eda/                      # Notebooks or Python scripts for EDA
+│   ├── models/                   # ML models (regression, LSTM, etc.)
+│   ├── sentiment/                # Scripts for news/text analysis
+│   └── utils/                    # Helper functions (data loading, plotting)
 │
 ├── outputs/
-│   ├── plots/                  # Visualizations (matplotlib, seaborn)
-│   └── predictions/            # Model outputs, metrics, etc.
+│   ├── plots/                    # Visualizations (matplotlib, seaborn)
+│   └── predictions/              # Model outputs, metrics, etc.
 │
-├── notebooks/                   # Jupyter notebooks (if separated from scripts)
+├── notebooks/                    # Jupyter notebooks (if separated from scripts)
 │
-└── ui/                          # UI elements or CLI interface
+└── ui/                           # UI elements or CLI interface
 
 
 >  This project began as a way to better understand how financial markets respond to real-world signals. I wanted to connect what I’ve learned in machine learning with something impactful and practical. It’s still in progress — but I’m documenting each phase as I go. 
