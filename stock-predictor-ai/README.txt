@@ -19,8 +19,20 @@ AI_quant/
 │    ├── scripts/
 │    │    ├── Exploratory_data_analysis/   # Notebooks or Python scripts for EDA
 │    │    ├── data_collection_and_clean/   # ML models (regression, LSTM, etc.)
-│    │    ├── stock_update                 # Scripts for news/text analysis
-│    │    └── utils/                       # Helper functions (data loading, plotting)
+│    │    └── stock_update                 # Scripts for news/text analysis
+│    │
+│    ├── Backups/  
+│    │    ├── backup_clean_data.txt
+│    │    ├── backup_fetch_data.txt
+│    │    ├── backup_graph_plot.txt
+│    │    └── backup_live_update.txt
+│    │ 
+│    │ 
+│    │
+│    │
+│    │
+│    │
+│    │
 │    │
 │    ├── project_log.txt
 │    ├── README.txt                     # Project overview (clean, technical)
