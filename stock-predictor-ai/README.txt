@@ -23,10 +23,11 @@ AI_quant/
 │    │    └── utils/                       # Helper functions (data loading, plotting)
 │    │
 │    ├── project_log.txt
-│    │
-│    ├── README.md                     # Project overview (clean, technical)
-│    │
-│    ├──
+│    ├── README.txt                     # Project overview (clean, technical)
+│    ├── LICENSE.txt
+│    └── Documentation.md
+│
+│
 ├── notebooks/                    # Jupyter notebooks (if separated from scripts)
 │
 └── ui/                           # UI elements or CLI interface
