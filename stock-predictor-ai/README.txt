@@ -7,9 +7,9 @@ AI_quant/
 │    ├── project_reflections.txt  # personal notes, progress journal
 │    ├── experimentation.txt 
 │    ├── things_to_study.txt
-│    ├──
-│    ├──
-│    ├──
+│    ├── Checklist.txt
+│    ├── project_for_quant.txt
+│    ├── The_why_how_and_whom.txt
 │    └──
 ├── stock-predictor-ai/
 │    ├── data/
