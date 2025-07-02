@@ -9,7 +9,13 @@ stock-prediction-ai/
 ├── notes/
 │    ├── project_reflections.txt  # personal notes, progress journal
 │    ├── experimentation.txt 
-│    └── things_to_study.txt
+│    ├── things_to_study.txt
+│    ├──
+│    ├──
+│    ├──
+│    ├── 
+│
+│
 ├── data/
 │    raw/                          # Original stock data (CSV, JSON, etc.)
 │    └── cleaned/                 # Preprocessed, formatted data
