@@ -39,7 +39,7 @@ The goal is to build a robust and modular pipeline for **quantitative analysis**
 
 ---
 
-# 🔧 Features and Techniques
+# Features and Techniques
 - Data collection and cleaning (pipeline completed)
 - Exploratory Data Analysis (EDA completed)
 - Linear Regression and Random Forest (in progress)
