@@ -20,9 +20,9 @@ Sincere thanks to ChatGPT.
 
 TERMS TO KNOW:
 
-1\.	Marker/Ticker: It’s your stock name listed on the stock market. Mentioned as markers or tickers when writing code
+1.	Marker/Ticker: It’s your stock name listed on the stock market. Mentioned as markers or tickers when writing code
 
-2\.	OHLC: Open, High, Low and Close meaning how much opening price the marker hit, high means the highest it went, Low means the lowest it dropped and close means prices before stock market closed
+2.	OHLC: Open, High, Low and Close meaning how much opening price the marker hit, high means the highest it went, Low means the lowest it dropped and close means prices before stock market closed
 
 
 
