@@ -3,9 +3,6 @@
 
 AI_quant/
 │
-├── README.md                     # Project overview (clean, technical)
-├── requirements.txt              # Python dependencies
-│
 ├── notes/
 │    ├── project_reflections.txt  # personal notes, progress journal
 │    ├── experimentation.txt 
@@ -14,22 +11,22 @@ AI_quant/
 │    ├──
 │    ├──
 │    ├── 
-│
-│
-├── data/
-│    raw/                          # Original stock data (CSV, JSON, etc.)
-│    └── cleaned/                 # Preprocessed, formatted data
-│
-├── scripts/
-│   ├── eda/                      # Notebooks or Python scripts for EDA
-│   ├── models/                   # ML models (regression, LSTM, etc.)
-│   ├── sentiment/                # Scripts for news/text analysis
-│   └── utils/                    # Helper functions (data loading, plotting)
-│
-├── outputs/
-│   ├── plots/                    # Visualizations (matplotlib, seaborn)
-│   └── predictions/              # Model outputs, metrics, etc.
-│
+├── stock-predictor-ai/
+│    ├── data/
+│    │   ├── raw/                     # Original stock data (CSV, JSON, etc.)
+│    │   └── cleaned/                 # Preprocessed, formatted data
+│    │
+│    ├── scripts/
+│    │    ├── Exploratory_data_analysis/   # Notebooks or Python scripts for EDA
+│    │    ├── data_collection_and_clean/   # ML models (regression, LSTM, etc.)
+│    │    ├── stock_update                 # Scripts for news/text analysis
+│    │    └── utils/                       # Helper functions (data loading, plotting)
+│    │
+│    ├── project_log.txt
+│    │
+│    ├── README.md                     # Project overview (clean, technical)
+│    │
+│    ├──
 ├── notebooks/                    # Jupyter notebooks (if separated from scripts)
 │
 └── ui/                           # UI elements or CLI interface
