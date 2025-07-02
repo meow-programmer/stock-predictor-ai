@@ -4,7 +4,7 @@
 stock-prediction-ai/
 │
 ├── README.md                     # Project overview (clean, technical)
-├── project_reflections.txt      # Your personal notes, progress journal
+├── project_reflections.txt      # personal notes, progress journal
 ├── requirements.txt             # Python dependencies
 │
 ├── data/
@@ -23,7 +23,7 @@ stock-prediction-ai/
 │
 ├── notebooks/                   # Jupyter notebooks (if separated from scripts)
 │
-└── ui/                          # (Optional) UI elements or CLI interface
+└── ui/                          # UI elements or CLI interface
 
 
 >  This project began as a way to better understand how financial markets respond to real-world signals. I wanted to connect what I’ve learned in machine learning with something impactful and practical. It’s still in progress — but I’m documenting each phase as I go. 
@@ -31,7 +31,7 @@ stock-prediction-ai/
 
 
 # Project Overview
-This project explores predictive modeling for stock trends using:
+This project explores predictive modeling for stock trends using:	
 - Historical stock price data
 - Time series forecasting techniques
 - Sentiment analysis from external sources (planned)
