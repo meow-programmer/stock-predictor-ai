@@ -6,7 +6,8 @@ stock-prediction-ai/
 ├── README.md                     # Project overview (clean, technical)
 ├── project_reflections.txt      # personal notes, progress journal
 ├── requirements.txt             # Python dependencies
-│
+├──
+
 ├── data/
 │   ├── raw/                     # Original stock data (CSV, JSON, etc.)
 │   └── cleaned/                 # Preprocessed, formatted data
