@@ -48,11 +48,6 @@ The goal is to build a robust and modular pipeline for **quantitative analysis**
 
 ---
 
-# Folder Structure
-
-
----
-
 ## Tools & Libraries
 - Python, Pandas, NumPy, scikit-learn, Matplotlib, Seaborn  
 - Jupyter Notebooks, Virtual Studio Code
