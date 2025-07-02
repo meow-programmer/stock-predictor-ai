@@ -42,8 +42,8 @@ AI_quant/
 │
 ├── notebooks/                    # Jupyter notebooks (if separated from scripts)
 │
-└── ui/                           # UI elements or CLI interface
-
+├── ui/                           # UI elements or CLI interface
+│    └── UI_layout.txt
 
 >  This project began as a way to better understand how financial markets respond to real-world signals. I wanted to connect what I’ve learned in machine learning with something impactful and practical. It’s still in progress — but I’m documenting each phase as I go. 
 
