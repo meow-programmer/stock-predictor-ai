@@ -5,46 +5,39 @@
 AI_quant/
 │
 ├── notes/
-│    ├── project_reflections.txt  # personal notes, progress journal
+│    ├── project_reflections.txt
 │    ├── experimentation.txt 
 │    ├── things_to_study.txt
-│    ├── Checklist.txt
+│    ├── checklist.txt
 │    ├── project_for_quant.txt
-│    ├── The_why_how_and_whom.txt
-│    └──
+│    ├── the_why_how_and_whom.txt
+│
 ├── stock-predictor-ai/
 │    ├── data/
-│    │   ├── raw/                     # Original stock data (CSV, JSON, etc.)
-│    │   └── cleaned/                 # Preprocessed, formatted data
+│    │   ├── raw/
+│    │   └── cleaned/
 │    │
 │    ├── scripts/
-│    │    ├── Exploratory_data_analysis/   # Notebooks or Python scripts for EDA
-│    │    ├── data_collection_and_clean/   # ML models (regression, LSTM, etc.)
-│    │    └── stock_update                 # Scripts for news/text analysis
+│    │    ├── exploratory_analysis/
+│    │    ├── data_cleaning/
+│    │    └── stock_update/
 │    │
-│    ├── Backups/  
+│    ├── Backups/
 │    │    ├── backup_clean_data.txt
 │    │    ├── backup_fetch_data.txt
 │    │    ├── backup_graph_plot.txt
-│    │    └── backup_live_update.txt
-│    │ 
-│    │ 
-│    │
-│    │
-│    │
-│    │
-│    │
+│    │    ├── backup_live_update.txt
 │    │
 │    ├── project_log.txt
-│    ├── README.txt                     # Project overview (clean, technical)
+│    ├── README.md
 │    ├── LICENSE.txt
-│    └── Documentation.md
+│    ├── Documentation.md
+│    └── requirements.txt  ← optional but important
 │
+├── notebooks/
 │
-├── notebooks/                    # Jupyter notebooks (if separated from scripts)
-│
-├── ui/                           # UI elements or CLI interface
-│    └── UI_layout.txt
+├── ui/
+│    └── ui_layout.txt
 
 
 >  This project began as a way to better understand how financial markets respond to real-world signals. I wanted to connect what I’ve learned in machine learning with something impactful and practical. It’s still in progress — but I’m documenting each phase as I go. 
