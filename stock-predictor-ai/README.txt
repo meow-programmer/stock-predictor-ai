@@ -1,7 +1,7 @@
 # Stock Prediction Using ML & Sentiment Analysis
 # File locations:
 
-stock-prediction-ai/
+AI_quant/
 │
 ├── README.md                     # Project overview (clean, technical)
 ├── requirements.txt              # Python dependencies
