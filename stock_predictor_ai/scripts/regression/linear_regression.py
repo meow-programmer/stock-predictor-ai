@@ -1,9 +1,10 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
-from model_evaluations.evaluations import evaluate_model #type: ignore
+from scripts.model_evaluations.evaluations import evaluate_model #type: ignore
 import os
 import sys
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Load file
