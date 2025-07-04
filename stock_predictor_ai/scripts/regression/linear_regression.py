@@ -1,10 +1,13 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
+from model_evaluations.evaluations import evaluate_model
 import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Load file
-stock_symbol = input("Enter stock symbol (e.g., AAPL): ").upper()
+stock_symbol = input("Enter stock   ymbol (e.g., AAPL): ").upper()
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 file_path = os.path.join(base_dir, 'data', 'cleaned', f'{stock_symbol}.xlsx')
 df = pd.read_excel(file_path)
@@ -29,13 +32,16 @@ annual_close = df.groupby('Year')['Close_' + stock_symbol].last().reset_index(na
 yearly_df = pd.merge(annual_sma, annual_close, on='Year')
 
 # Linear regression
-X = yearly_df[['Avg_SMA']]
+x = yearly_df[['Avg_SMA']]
 y = yearly_df['Year_End_Close']
 model = LinearRegression()
-model.fit(X, y)
+model.fit(x, y)
 
 # Predictions
-yearly_df['Predicted_Close'] = model.predict(X)
+yearly_df['Predicted_Close'] = model.predict(x)
+
+# Evaluations
+evaluate_model(model, x, y)
 
 # Plotting
 plt.figure(figsize=(10, 6))
