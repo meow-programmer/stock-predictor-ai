@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
-from scripts.model_evaluations.evaluations import evaluate_model #type: ignore
+from model_evaluations.evaluations import evaluate_model
 import os
 import sys
 
