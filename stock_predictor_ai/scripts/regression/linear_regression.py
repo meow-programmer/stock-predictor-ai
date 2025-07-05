@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_squared_error
 import os
 import sys
 
@@ -52,8 +53,19 @@ def mae(model, x, y):
 
     return mae_value  # optional, if you want to use it later
 
+def mse(model,x,y):
+    model.fit(x,y)
+    y_test = y
+    y_pred = model.predict(x)
+    
+    # Mean square error
+    mse_value = mean_squared_error(y_test, y_pred)
+    print("MSE: ",mse_value)
+
+
 # Evaluations
 mae(model, x, y)
+mse(model, x, y)
 
 # Plotting
 plt.figure(figsize=(10, 6))
