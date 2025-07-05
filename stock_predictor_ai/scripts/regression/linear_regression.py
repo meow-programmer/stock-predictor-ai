@@ -41,7 +41,7 @@ model.fit(x, y)
 # Predictions
 yearly_df['Predicted_Close'] = model.predict(x)
 
-def evaluate_model(model, x, y):
+def mae(model, x, y):
     model.fit(x, y)
     y_test = y
     y_pred = model.predict(x)
@@ -53,7 +53,7 @@ def evaluate_model(model, x, y):
     return mae_value  # optional, if you want to use it later
 
 # Evaluations
-evaluate_model(model, x, y)
+mae(model, x, y)
 
 # Plotting
 plt.figure(figsize=(10, 6))
