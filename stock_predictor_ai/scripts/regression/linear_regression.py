@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_squared_error
+import numpy as np
 import os
 import sys
 
@@ -62,10 +63,30 @@ def mse(model,x,y):
     mse_value = mean_squared_error(y_test, y_pred)
     print("MSE: ",mse_value)
 
+def rmse(model, x, y):
+    model.fit(x, y)
+    y_test = y
+    y_pred = model.predict(x)
+
+    # Root Mean Squared Error
+    rmse_value = np.sqrt(mean_squared_error(y_test, y_pred))
+    print("RMSE:", rmse_value)
+
+def adjusted_r2(model, x, y):
+    model.fit(x, y)
+    r2 = model.score(x, y)
+    n = x.shape[0]
+    k = x.shape[1]
+    adj_r2 = 1 - (1 - r2) * (n - 1) / (n - k - 1)
+    print("Adjusted R²:", adj_r2)
+
+
 
 # Evaluations
 mae(model, x, y)
 mse(model, x, y)
+rmse(model, x ,y)
+adjusted_r2(model, x, y)
 
 # Plotting
 plt.figure(figsize=(10, 6))
