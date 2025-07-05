@@ -80,13 +80,20 @@ def adjusted_r2(model, x, y):
     adj_r2 = 1 - (1 - r2) * (n - 1) / (n - k - 1)
     print("Adjusted R²:", adj_r2)
 
-
+y_pred = model.predict(x)
+def huber_loss(y_true, y_pred, delta=1.0):
+    error = y_true-y_pred
+    is_small_error = np.abs(error) <= delta
+    squared_loss = 0.5 * error ** 2
+    linear_loss = delta * (np.abs(error) - 0.5 * delta)
+    return np.mean(np.where(is_small_error, squared_loss, linear_loss))
 
 # Evaluations
 mae(model, x, y)
 mse(model, x, y)
 rmse(model, x ,y)
 adjusted_r2(model, x, y)
+print("Huber Loss:", huber_loss(y, y_pred))
 
 # Plotting
 plt.figure(figsize=(10, 6))
