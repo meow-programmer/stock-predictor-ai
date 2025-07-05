@@ -1,11 +1,11 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
-from model_evaluations.evaluations import evaluate_model
+from sklearn.metrics import mean_absolute_error
 import os
 import sys
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 # Load file
 stock_symbol = input("Enter stock   ymbol (e.g., AAPL): ").upper()
@@ -40,6 +40,17 @@ model.fit(x, y)
 
 # Predictions
 yearly_df['Predicted_Close'] = model.predict(x)
+
+def evaluate_model(model, x, y):
+    model.fit(x, y)
+    y_test = y
+    y_pred = model.predict(x)
+
+    # Mean Absolute Error
+    mae_value = mean_absolute_error(y_test, y_pred)
+    print("MAE:", mae_value)
+
+    return mae_value  # optional, if you want to use it later
 
 # Evaluations
 evaluate_model(model, x, y)
