@@ -10,7 +10,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 # Load file
-stock_symbol = input("Enter stock   ymbol (e.g., AAPL): ").upper()
+stock_symbol = input("Enter stock  symbol (e.g., AAPL): ").upper()
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 file_path = os.path.join(base_dir, 'data', 'cleaned', f'{stock_symbol}.xlsx')
 df = pd.read_excel(file_path)
