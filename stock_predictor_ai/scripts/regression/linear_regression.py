@@ -5,9 +5,7 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_squared_error
 import numpy as np
 import os
-import sys
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 # Load file
 stock_symbol = input("Enter stock  symbol (e.g., AAPL): ").upper()
@@ -33,7 +31,7 @@ annual_close = df.groupby('Year')['Close_' + stock_symbol].last().reset_index(na
 
 # Merge both
 yearly_df = pd.merge(annual_sma, annual_close, on='Year')
-
+    
 # Linear regression
 x = yearly_df[['Avg_SMA']]
 y = yearly_df['Year_End_Close']
