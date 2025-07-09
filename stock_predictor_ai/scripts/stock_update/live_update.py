@@ -4,7 +4,7 @@ import yfinance as yf
 from datetime import datetime
 
 # Folder path
-cleaned_folder = "stock-predictor-ai/data/cleaned"
+cleaned_folder = "stock_predictor_ai/data/cleaned"
 
 # Get all Excel files (like 'ABT.xlsx')
 files = [f for f in os.listdir(cleaned_folder) if f.endswith(".xlsx")]
