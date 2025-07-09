@@ -7,11 +7,13 @@ import numpy as np
 import os
 
 
-# Load file
+# ==== Path Setup ====
 stock_symbol = input("Enter stock  symbol (e.g., AAPL): ").upper()
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 file_path = os.path.join(base_dir, 'data', 'cleaned', f'{stock_symbol}.xlsx')
 df = pd.read_excel(file_path)
+
+# ==== Feature Engineering ====
 
 # Convert to datetime
 df['Date'] = pd.to_datetime(df['Date'])
@@ -32,7 +34,7 @@ annual_close = df.groupby('Year')['Close_' + stock_symbol].last().reset_index(na
 # Merge both
 yearly_df = pd.merge(annual_sma, annual_close, on='Year')
     
-# Linear regression
+# ==== Regression ====
 x = yearly_df[['Avg_SMA']]
 y = yearly_df['Year_End_Close']
 model = LinearRegression()
