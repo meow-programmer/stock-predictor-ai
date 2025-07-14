@@ -32,7 +32,7 @@ AI_quant/
 │    ├── README.md
 │    ├── LICENSE.txt
 │    ├── Documentation.md
-│    └── requirements.txt  ← optional but important
+│    └── requirements.txt  
 │
 ├── notebooks/
 │
