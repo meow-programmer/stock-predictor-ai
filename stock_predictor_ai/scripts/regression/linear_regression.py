@@ -77,7 +77,7 @@ def adjusted_r2(model, x, y):
     r2 = model.score(x, y)
     n = x.shape[0]
     k = x.shape[1]
-    adj_r2 = 1 - (1 - r2) * (n - 1) / (n - k - 1)
+    adj_r2 = 1 - (1 - r2) * (n - 1) / (n - k - 1) #equation
     print("Adjusted R²:", adj_r2)
 
 y_pred = model.predict(x)
