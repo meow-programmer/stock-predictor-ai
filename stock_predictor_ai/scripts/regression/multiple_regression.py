@@ -43,6 +43,21 @@ model.fit(x, y)
 y_pred = model.predict(x)
 yearly_df['Predicted_Close'] = y_pred
 
+# ==== Future Prediction ====
+latest_features = yearly_df[['Avg_SMA', 'Avg_EMA', 'Avg_Volatility']].iloc[-1].values.reshape(1, -1)
+future_pred = model.predict(latest_features)[0]
+next_year = yearly_df['Year'].max() + 1
+
+# Append predicted future row
+yearly_df = pd.concat([yearly_df, pd.DataFrame([{
+    'Year': next_year,
+    'Avg_SMA': np.nan,
+    'Avg_EMA': np.nan,
+    'Avg_Volatility': np.nan,
+    'Year_End_Close': np.nan,
+    'Predicted_Close': future_pred
+}])], ignore_index=True)
+
 # ==== Metrics ====
 def mae(y_true, y_pred):
     return mean_absolute_error(y_true, y_pred)
@@ -72,14 +87,15 @@ print(f"MSE: {mse(y, y_pred)}")
 print(f"RMSE: {rmse(y, y_pred)}")
 print(f"Adjusted R²: {adjusted_r2(y, y_pred, x)}")
 print(f"Huber Loss: {huber_loss(y, y_pred)}")
+print(f"\n📈 Predicted Close for Year {next_year}: {future_pred:.2f}")
 
 # ==== Plot ====
 plt.figure(figsize=(10, 6))
 plt.plot(yearly_df['Year'], yearly_df['Year_End_Close'], label='Actual Close', marker='o')
-plt.plot(yearly_df['Year'], yearly_df['Predicted_Close'], label='Predicted Close', marker='x')
+plt.plot(yearly_df['Year'], yearly_df['Predicted_Close'], label='Predicted Close', marker='x', linestyle='--')
 plt.xlabel('Year')
 plt.ylabel('Closing Price')
-plt.title(f"{stock_symbol} Year-End Price Prediction (Multi Linear Regression)")
+plt.title(f"{stock_symbol} Year-End Price Prediction (+Future) (Multi Linear Regression)")
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
