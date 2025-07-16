@@ -98,5 +98,6 @@ plt.ylabel('Closing Price')
 plt.title(f"{stock_symbol} Year-End Price Prediction (+Future) (Multi Linear Regression)")
 plt.legend()
 plt.grid(True)
+plt.xticks(yearly_df['Year'][::2].dropna().astype(int))  # every 2nd year
 plt.tight_layout()
 plt.show()
