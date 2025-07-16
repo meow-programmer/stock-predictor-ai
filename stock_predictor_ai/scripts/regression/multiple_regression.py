@@ -53,7 +53,7 @@ latest_valid['SMA_20'] = latest_valid[f'Close_{stock_symbol}'].rolling(window=20
 latest_valid['Volatility_10'] = latest_valid[f'Close_{stock_symbol}'].rolling(window=10).std()
 latest_valid.dropna(inplace=True)
 
-# Now get the real most recent available feature row
+# Now get the real most recent available feature row ----> important
 latest_features_row = latest_valid.iloc[-1]
 latest_features = latest_features_row[features].values.reshape(1, -1)
 latest_date = latest_features_row['Date']
