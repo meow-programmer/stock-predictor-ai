@@ -4,6 +4,9 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 import os
 from datetime import timedelta
+from ta.momentum import RSIIndicator #RSI
+from ta.trend import MACD #MACD
+from ta.volatility import BollingerBands #BB
 
 # ==== Path Setup ====
 base_dir = os.path.abspath(os.path.join(os.getcwd(), 'stock_predictor_ai'))
@@ -23,6 +26,19 @@ original_df = df.copy()
 df['SMA_10'] = df[f'Close_{stock_symbol}'].rolling(window=10).mean()
 df['SMA_20'] = df[f'Close_{stock_symbol}'].rolling(window=20).mean()
 df['Volatility_10'] = df[f'Close_{stock_symbol}'].rolling(window=10).std()
+
+# RSI
+rsi = RSIIndicator(close=df[f'Close_{stock_symbol}'], window=14)
+df['RSI_14'] = rsi.rsi()
+
+# MACD
+macd = MACD(close=df[f'Close_{stock_symbol}'],window=14)
+df['MACD'] = macd.macd()
+df['MACD_Signal'] = macd.macd_signal()  
+
+# Bollinger Bands
+bb = BollingerBands(close=df[f'Close_{stock_symbol}'],window=20,window_dev=2)
+df["BB_Width"] = bb.bollinger.hband() - bb.bollinger.lband()
 
 # Predict the close price 5 business days ahead
 df['Target_Close'] = df[f'Close_{stock_symbol}'].shift(-5)
@@ -70,11 +86,14 @@ while days_added < 5:
         days_added += 1
 
 # ==== Print Output ====
-print("\nEvaluation Metrics (Test Set)")
-print("----------------------------")
-print(f"MAE: {mae:.2f}")
-print(f"RMSE: {rmse:.2f}")
-print(f"R²: {r2:.4f}")
+print("\n📊 Latest Technical Indicators")
+print("-----------------------------")
+print(f"RSI (14): {latest_features_row['RSI_14']:.2f}")
+print(f"MACD: {latest_features_row['MACD']:.2f}")
+print(f"MACD Signal: {latest_features_row['MACD_Signal']:.2f}")
+print(f"Bollinger Upper: {latest_features_row['BB_Upper']:.2f}")
+print(f"Bollinger Lower: {latest_features_row['BB_Lower']:.2f}")
+
 
 print("\n📈 Predicted Closing Price")
 print("----------------------------")
