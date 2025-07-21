@@ -32,7 +32,7 @@ rsi = RSIIndicator(close=df[f'Close_{stock_symbol}'], window=14)
 df['RSI_14'] = rsi.rsi()
 
 # MACD
-macd = MACD(close=df[f'Close_{stock_symbol}'],window=14)
+macd = MACD(close=df[f'Close_{stock_symbol}'], window=14)
 df['MACD'] = macd.macd()
 df['MACD_Signal'] = macd.macd_signal()  
 
