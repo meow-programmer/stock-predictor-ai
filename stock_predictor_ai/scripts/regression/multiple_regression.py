@@ -29,12 +29,13 @@ df['Volatility_10'] = df[f'Close_{stock_symbol}'].rolling(window=10).std()
 
 # RSI
 rsi = RSIIndicator(close=df[f'Close_{stock_symbol}'], window=14)
-df['RSI_14'] = rsi.rsi()
+df["RSI_14"] = rsi.rsi()
 
 # MACD
-macd = MACD(close=df[f'Close_{stock_symbol}'], window=14)
-df['MACD'] = macd.macd()
-df['MACD_Signal'] = macd.macd_signal()  
+macd = MACD(close=df[f'Close_{stock_symbol}'])
+df["MACD"] = macd.macd()
+df["MACD_Signal"] = macd.macd_signal()
+df["MACD_Diff"] = df["MACD"] - df["MACD_Signal"]
 
 # Bollinger Bands
 bb = BollingerBands(close=df[f'Close_{stock_symbol}'], window=20, window_dev=2)
@@ -42,20 +43,17 @@ df["BB_Upper"] = bb.bollinger_hband()
 df["BB_Lower"] = bb.bollinger_lband()
 df["BB_Width"] = df["BB_Upper"] - df["BB_Lower"]
 
+
 # Predict the close price 5 business days ahead
 df['Target_Close'] = df[f'Close_{stock_symbol}'].shift(-5)
 features = [
-    'SMA_10',
-    'SMA_20',
-    'Volatility_10',
-    'RSI_14',
-    'MACD',
-    'MACD_Signal',
-    'BB_Upper',
-    'BB_Lower',
-    'BB_Width'
+    'SMA_10', 'SMA_20', 'Volatility_10',
+    'RSI_14', 'MACD', 'MACD_Signal', 'MACD_Diff',
+    'BB_Upper', 'BB_Lower', 'BB_Width'
 ]
-df.dropna(inplace=True)
+
+df.dropna(inplace=True) 
+
 
 # ==== Train/Test Split ====
 x = df[features]
@@ -75,11 +73,37 @@ rmse = np.sqrt(mean_squared_error(y_test, y_pred))
 r2 = model.score(x_test, y_test)
 
 # ==== Get Latest Available Features ====
-latest_valid = original_df.tail(25).copy()  # Grab enough rows to compute SMA
+# Take the last 50 rows to be safe (so all rolling windows work)
+latest_valid = original_df.tail(50).copy()
+
+# Basic indicators
 latest_valid['SMA_10'] = latest_valid[f'Close_{stock_symbol}'].rolling(window=10).mean()
 latest_valid['SMA_20'] = latest_valid[f'Close_{stock_symbol}'].rolling(window=20).mean()
 latest_valid['Volatility_10'] = latest_valid[f'Close_{stock_symbol}'].rolling(window=10).std()
+
+# RSI
+rsi = RSIIndicator(close=latest_valid[f'Close_{stock_symbol}'], window=14)
+latest_valid['RSI_14'] = rsi.rsi()
+
+# MACD
+macd = MACD(close=latest_valid[f'Close_{stock_symbol}'])
+latest_valid['MACD'] = macd.macd()
+latest_valid['MACD_Signal'] = macd.macd_signal()
+latest_valid['MACD_Diff'] = macd.macd_diff()
+
+# Bollinger Bands
+bb = BollingerBands(close=latest_valid[f'Close_{stock_symbol}'], window=20, window_dev=2)
+latest_valid['BB_Upper'] = bb.bollinger_hband()
+latest_valid['BB_Lower'] = bb.bollinger_lband()
+latest_valid['BB_Width'] = latest_valid['BB_Upper'] - latest_valid['BB_Lower']
+
+# Drop NaNs caused by rolling indicators
 latest_valid.dropna(inplace=True)
+
+# Now select the latest row for prediction
+latest_features_row = latest_valid.iloc[-1]
+latest_features = latest_features_row[features].values.reshape(1, -1)
+
 
 # Now get the real most recent available feature row ----> important
 latest_features_row = latest_valid.iloc[-1]
