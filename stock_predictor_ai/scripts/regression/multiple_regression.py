@@ -37,12 +37,24 @@ df['MACD'] = macd.macd()
 df['MACD_Signal'] = macd.macd_signal()  
 
 # Bollinger Bands
-bb = BollingerBands(close=df[f'Close_{stock_symbol}'],window=20,window_dev=2)
-df["BB_Width"] = bb.bollinger.hband() - bb.bollinger.lband()
+bb = BollingerBands(close=df[f'Close_{stock_symbol}'], window=20, window_dev=2)
+df["BB_Upper"] = bb.bollinger_hband()
+df["BB_Lower"] = bb.bollinger_lband()
+df["BB_Width"] = df["BB_Upper"] - df["BB_Lower"]
 
 # Predict the close price 5 business days ahead
 df['Target_Close'] = df[f'Close_{stock_symbol}'].shift(-5)
-features = ['SMA_10', 'SMA_20', 'Volatility_10', 'RSI', 'MACD', 'Bollinger_Upper', 'Bollinger_Lower']
+features = [
+    'SMA_10',
+    'SMA_20',
+    'Volatility_10',
+    'RSI_14',
+    'MACD',
+    'MACD_Signal',
+    'BB_Upper',
+    'BB_Lower',
+    'BB_Width'
+]
 df.dropna(inplace=True)
 
 # ==== Train/Test Split ====
