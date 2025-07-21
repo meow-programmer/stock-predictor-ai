@@ -42,7 +42,7 @@ df["BB_Width"] = bb.bollinger.hband() - bb.bollinger.lband()
 
 # Predict the close price 5 business days ahead
 df['Target_Close'] = df[f'Close_{stock_symbol}'].shift(-5)
-features = ['SMA_10', 'SMA_20', 'Volatility_10']
+features = ['SMA_10', 'SMA_20', 'Volatility_10', 'RSI', 'MACD', 'Bollinger_Upper', 'Bollinger_Lower']
 df.dropna(inplace=True)
 
 # ==== Train/Test Split ====
