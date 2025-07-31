@@ -3,6 +3,7 @@ import numpy as pd
 import os
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import sequential
+from tensorflow.keras.layers import LSTM, Dense, Dropout
 
 # ==== Path Setup ====
 stock_symbol = input("Enter stock symbol: ").upper()
@@ -23,7 +24,22 @@ y = np.array(y)
 x = np.reshape(X, (X.shape[0], X.shape[1], 1))
 
 # ==== LSTM model ====
+model = Sequential()
+model.add(LSTM(units=50, return_sequences=True, input_shape=(X.shape[1],1)))
+model.add(Dropout(0.2))
 
+model.add(LSTM(units=50, return_sequences=False))
+model.add(Dropout(0.2))
+
+model.add(Dense(units=25))
+model.add(Dense(units=1))
+
+model.compile(optimizer='adam', loss='mean_squared_error')
+
+# ==== Model train ====
+model.fit(x, y, batch_size=32, epochs=25)
+
+# ==== Prediction ====
 
 
 
