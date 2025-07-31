@@ -40,7 +40,16 @@ model.compile(optimizer='adam', loss='mean_squared_error')
 model.fit(x, y, batch_size=32, epochs=25)
 
 # ==== Prediction ====
+test_data = scaled_data[-sequence_length:]
+x_test = []
+x_test.append(test_data)
 
+x_test = np.array(x_test)
+x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
+
+predicted_price = model.predict(x_test)
+predicted_price = scaler.inverse_transform(predicted_price) # bring back to original scale
+print(predicted_price)
 
 
 
