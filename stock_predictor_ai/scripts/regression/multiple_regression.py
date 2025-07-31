@@ -122,7 +122,7 @@ while days_added < 5:
         days_added += 1
 
 # ==== Print Output ====
-print("\n📊 Latest Technical Indicators")
+print("\n Latest Technical Indicators")
 print("-----------------------------")
 print(f"RSI (14): {latest_features_row['RSI_14']:.2f}")
 print(f"MACD: {latest_features_row['MACD']:.2f}")
@@ -131,6 +131,6 @@ print(f"Bollinger Upper: {latest_features_row['BB_Upper']:.2f}")
 print(f"Bollinger Lower: {latest_features_row['BB_Lower']:.2f}")
 
 
-print("\n📈 Predicted Closing Price")
+print("\n Predicted Closing Price")
 print("----------------------------")
 print(f"From: {latest_date.date()}  -->  To: {next_week_date.date()}  |  Predicted Close: ${predicted_price:.2f}")
