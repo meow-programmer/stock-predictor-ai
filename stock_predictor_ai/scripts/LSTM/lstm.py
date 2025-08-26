@@ -1,5 +1,5 @@
 # LSTM is sequence based
-import numpy as pd
+import numpy as np
 import os
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import sequential
@@ -50,6 +50,7 @@ x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
 predicted_price = model.predict(x_test)
 predicted_price = scaler.inverse_transform(predicted_price) # bring back to original scale
 print(predicted_price)
+
 
 
 
