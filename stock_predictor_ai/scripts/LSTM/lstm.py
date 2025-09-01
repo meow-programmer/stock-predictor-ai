@@ -95,6 +95,13 @@ x_test.append(test_data)
 x_test = np.array(x_test)
 x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], x_test.shape[2]))
 
-predicted_price = model.predict(x_test)
-predicted_price = scaler.inverse_transform(np.hstack((predicted_price, np.zeros((predicted_price.shape[0], x_test.shape[2] - 1)))))  # Adding dummy columns to match original scale
-print(predicted_price)
+# Predict scaled closing price
+predicted_price_scaled = model.predict(x_test)
+
+# Create a dummy array with same shape as scaler input
+dummy = np.zeros((predicted_price_scaled.shape[0], scaled_data.shape[1]))
+dummy[:, 0] = predicted_price_scaled[:, 0]  # put prediction in the "Close" column
+
+# Inverse transform
+predicted_price = scaler.inverse_transform(dummy)[:, 0]  # only take Close back
+print("Predicted Closing Price:", predicted_price[-1])
