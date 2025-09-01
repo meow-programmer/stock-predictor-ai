@@ -67,6 +67,6 @@ print(f"RMSE: {rmse(y, y_pred):.2f}")
 print(f"Adjusted R²: {adjusted_r2(y, y_pred, x):.4f}")
 print(f"Huber Loss: {huber_loss(y, y_pred):.2f}")
 
-print("\n📈 Predicted Closing Price")
+print("\n Predicted Closing Price")
 print("----------------------------")
 print(f"From: {actual_latest_date.date()}  -->  To: {next_week_date.date()}  |  Predicted Close: ${next_week_pred:.2f}")

@@ -29,7 +29,7 @@ else:
 # Clean each file
 for file in files_to_clean:
     file_path = os.path.join(raw_folder, file)
-    print(f"🧽 Cleaning {file}")
+    print(f" Cleaning {file}")
 
     try:
         df_raw = pd.read_excel(file_path, header=[0, 1])

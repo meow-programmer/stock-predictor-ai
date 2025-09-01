@@ -1,52 +1,29 @@
-# LSTM is sequence based
-import numpy as np
-import os
-from sklearn.preprocessing import MinMaxScaler
 from keras.models import sequential
-from tensorflow.keras.layers import LSTM, Dense, Dropout
 
-# ==== Path Setup ====
-stock_symbol = input("Enter stock symbol: ").upper()
-base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__),'..','..'))
-file_path = os.path.join(base_dir, 'data', 'cleaned', f'{stock_symbol}.xlsx')
-df = Excel.read(file_path)
 
-# ==== sequence creation ====
-sequence_length = 60 # use past 60 day to predict next day
-x, y = [], []
-for i in range(sequence_length, len(scaled_data)):
-  x.append(scaled_data[i - sequence_length: i, 0])
-  y.append(scaled_data[i,0])
 
-x = np.array(x)
-y = np.array(y)
 
-x = np.reshape(x, (x.shape[0], x.shape[1], 1))
 
-# ==== LSTM model ====
-model = Sequential()
-model.add(LSTM(units=50, return_sequences=True, input_shape=(X.shape[1],1)))
-model.add(Dropout(0.2))
 
-model.add(LSTM(units=50, return_sequences=False))
-model.add(Dropout(0.2))
 
-model.add(Dense(units=25))
-model.add(Dense(units=1))
 
-model.compile(optimizer='adam', loss='mean_squared_error')
 
-# ==== Model train ====
-model.fit(x, y, batch_size=32, epochs=25)
 
-# ==== Prediction ====
-test_data = scaled_data[-sequence_length:]
-x_test = []
-x_test.append(test_data)
 
-x_test = np.array(x_test)
-x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
 
-predicted_price = model.predict(x_test)
-predicted_price = scaler.inverse_transform(predicted_price) # bring back to original scale
-print(predicted_price)
+
+# ==== Aggregation by Year ====
+yearly_df = df.groupby('Year').agg({
+    'SMA_50': 'mean',
+    'EMA_20': 'mean',
+    'Volatility': 'mean',
+    f'Close_{stock_symbol}': 'last'
+}).reset_index()
+
+
+
+
+
+
+
+
