@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import Sequential  # type:ignore
 from tensorflow.keras.layers import LSTM, Dense
+import matplotlib.pyplot as plt  # For plotting
 
 # 1️⃣ Ask for stock symbol
 stock_symbol = input("Enter stock symbol (e.g., AAPL): ").upper()
@@ -12,7 +13,6 @@ stock_symbol = input("Enter stock symbol (e.g., AAPL): ").upper()
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 file_path = os.path.join(base_dir, 'data', 'cleaned', f'{stock_symbol}.xlsx')
 
-# Check if file exists
 if not os.path.exists(file_path):
     print(f"Error: File '{file_path}' not found!")
     exit()
@@ -31,6 +31,7 @@ if close_col is None:
     print(f"Error: Closing price column for {stock_symbol} not found!")
     exit()
 
+# Extract only Close price
 prices = data[close_col].values.reshape(-1, 1)
 
 # 4️⃣ Scale data
@@ -53,22 +54,23 @@ model.add(LSTM(50))
 model.add(Dense(1))
 model.compile(optimizer='adam', loss='mean_squared_error')
 
-# 7️⃣ Train model
+# 7️⃣ Train model (short epochs for quick testing)
 print("Training LSTM model...")
-model.fit(X, y, epochs=5, batch_size=32, verbose=1)
+model.fit(X, y, epochs=20, batch_size=32, verbose=1)
 
 # 8️⃣ Predict next 7 days
-last_seq = scaled_prices[-seq_length:].reshape((1, seq_length, 1))
+last_seq = scaled_prices[-seq_length:].reshape(1, seq_length, 1)
 next_week_preds = []
-current_seq = last_seq.copy()
 
+current_seq = last_seq.copy()
 for _ in range(7):
     pred = model.predict(current_seq)
     next_week_preds.append(pred[0, 0])
+    # append predicted value to current sequence
     pred_reshaped = pred.reshape((1, 1, 1))
     current_seq = np.append(current_seq[:, 1:, :], pred_reshaped, axis=1)
 
-# 🔹 Convert predictions back to original scale
+# Convert predictions back to original scale
 next_week_preds = np.array(next_week_preds).reshape(-1, 1)
 next_week_preds = scaler.inverse_transform(next_week_preds)
 
@@ -77,4 +79,12 @@ print("\nPredicted closing prices for next 7 days:")
 for i, price in enumerate(next_week_preds.flatten(), 1):
     print(f"Day {i}: {price:.2f}")
 
-
+# 1️⃣0️⃣ Plot historical + predicted prices
+plt.figure(figsize=(12,6))
+plt.plot(prices, label='Actual Prices')
+plt.plot(range(len(prices), len(prices)+7), next_week_preds, color='red', marker='o', label='Predicted Prices')
+plt.title(f"{stock_symbol} Stock Price Prediction (LSTM)")
+plt.xlabel("Days")
+plt.ylabel("Price")
+plt.legend()
+plt.show()
