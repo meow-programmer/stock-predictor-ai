@@ -60,9 +60,9 @@ This was one of the more tedious but necessary parts of the project. Collect dat
 
 Files needed:
 
-1\.	fetch\data.py
+1.	fetch_data.py
 
-2\.	clean\data.py
+2.	clean_data.py
 
 
 
