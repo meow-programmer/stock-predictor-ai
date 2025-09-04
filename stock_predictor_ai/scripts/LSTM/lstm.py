@@ -74,12 +74,12 @@ for _ in range(7):
 next_week_preds = np.array(next_week_preds).reshape(-1, 1)
 next_week_preds = scaler.inverse_transform(next_week_preds)
 
-# 9️⃣ Display predictions
+# Display predictions
 print("\nPredicted closing prices for next 7 days:")
 for i, price in enumerate(next_week_preds.flatten(), 1):
     print(f"Day {i}: {price:.2f}")
 
-# 1️⃣0️⃣ Plot historical + predicted prices
+# Plot historical + predicted prices
 plt.figure(figsize=(12,6))
 plt.plot(prices, label='Actual Prices')
 plt.plot(range(len(prices), len(prices)+7), next_week_preds, color='red', marker='o', label='Predicted Prices')
@@ -88,4 +88,5 @@ plt.xlabel("Days")
 plt.ylabel("Price")
 plt.legend()
 plt.show()
+
 
