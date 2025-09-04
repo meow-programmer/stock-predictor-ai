@@ -6,10 +6,10 @@ from tensorflow.keras.models import Sequential  # type:ignore
 from tensorflow.keras.layers import LSTM, Dense
 import matplotlib.pyplot as plt  # For plotting
 
-# 1️⃣ Ask for stock symbol
+# Ask for stock symbol
 stock_symbol = input("Enter stock symbol (e.g., AAPL): ").upper()
 
-# 2️⃣ Build file path relative to this script
+# Build file path relative to this script
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 file_path = os.path.join(base_dir, 'data', 'cleaned', f'{stock_symbol}.xlsx')
 
@@ -17,7 +17,7 @@ if not os.path.exists(file_path):
     print(f"Error: File '{file_path}' not found!")
     exit()
 
-# 3️⃣ Read stock data
+#  Read stock data
 data = pd.read_excel(file_path)
 
 # Dynamically find the closing price column for this stock
@@ -34,11 +34,11 @@ if close_col is None:
 # Extract only Close price
 prices = data[close_col].values.reshape(-1, 1)
 
-# 4️⃣ Scale data
+#  Scale data
 scaler = MinMaxScaler(feature_range=(0, 1))
 scaled_prices = scaler.fit_transform(prices)
 
-# 5️⃣ Create sequences for LSTM
+#  Create sequences for LSTM
 seq_length = 60
 X, y = [], []
 for i in range(seq_length, len(scaled_prices)):
@@ -47,18 +47,18 @@ for i in range(seq_length, len(scaled_prices)):
 X, y = np.array(X), np.array(y)
 X = X.reshape((X.shape[0], X.shape[1], 1))
 
-# 6️⃣ Build LSTM model
+# Build LSTM model
 model = Sequential()
 model.add(LSTM(50, return_sequences=True, input_shape=(X.shape[1], 1)))
 model.add(LSTM(50))
 model.add(Dense(1))
 model.compile(optimizer='adam', loss='mean_squared_error')
 
-# 7️⃣ Train model (short epochs for quick testing)
+# Train model (short epochs for quick testing)
 print("Training LSTM model...")
 model.fit(X, y, epochs=20, batch_size=32, verbose=1)
 
-# 8️⃣ Predict next 7 days
+# Predict next 7 days
 last_seq = scaled_prices[-seq_length:].reshape(1, seq_length, 1)
 next_week_preds = []
 
@@ -88,3 +88,4 @@ plt.xlabel("Days")
 plt.ylabel("Price")
 plt.legend()
 plt.show()
+
