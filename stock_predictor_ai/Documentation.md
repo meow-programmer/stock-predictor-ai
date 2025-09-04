@@ -1,4 +1,4 @@
-Stock prediction and analysis 
+_Stock prediction and analysis 
 
 About the project:
 
@@ -78,3 +78,4 @@ Here we fetch 100 random markers from yfinance library in python.
 
 
 
+_
