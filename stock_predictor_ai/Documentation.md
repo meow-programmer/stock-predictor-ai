@@ -1,4 +1,4 @@
-_Stock prediction and analysis 
+Stock prediction and analysis 
 
 About the project:
 
@@ -60,13 +60,13 @@ This was one of the more tedious but necessary parts of the project. Collect dat
 
 Files needed:
 
-1\.	fetch\_data.py
+1\.	fetch\data.py
 
-2\.	clean\_data.py
+2\.	clean\data.py
 
 
 
-fetch\_data.py:
+fetch_data.py:
 
 Here we fetch 100 random markers from yfinance library in python.
 
