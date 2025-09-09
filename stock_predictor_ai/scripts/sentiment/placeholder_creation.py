@@ -16,7 +16,7 @@ print("Detected companies:", company_files)
 # 2️⃣ Generate or update placeholder sentiment
 for file_name in stock_files:
     company = file_name.split('.')[0]
-    stock_file = os.path.join(cleaned_folder, file_name)
+    stock_file = os.path.join(cleaned_folder, file_name) 
     save_path = os.path.join(sentiment_folder, f'{company}_sentiment.csv')
 
     # Read stock file
