@@ -1,23 +1,37 @@
 import os
 import pandas as pd
+from datetime import datetime
 
-# 1️⃣ Locate all stock files
-base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-cleaned_folder = os.path.join(base_dir, 'data', 'cleaned')
-sentiment_folder = os.path.join(base_dir, 'data', 'company_sentiment_ready')
-os.makedirs(sentiment_folder, exist_ok=True)
+# -----------------------------
+# Directories
+# -----------------------------
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+CLEANED_FOLDER = os.path.join(BASE_DIR, 'data', 'cleaned')
+SENTIMENT_FOLDER = os.path.join(BASE_DIR, 'data', 'company_sentiment_ready')
+os.makedirs(SENTIMENT_FOLDER, exist_ok=True)
 
-# Accept both Excel and CSV stock files
-stock_files = [f for f in os.listdir(cleaned_folder) if f.endswith(('.xlsx', '.csv'))]
-company_files = [f.split('.')[0] for f in stock_files]
+# Today's date
+today = pd.to_datetime(datetime.today().date())
 
-print("Detected companies:", company_files)
+# -----------------------------
+# Get all stock files
+# -----------------------------
+stock_files = [
+    f for f in os.listdir(CLEANED_FOLDER)
+    if f.endswith(('.xlsx', '.csv')) and f != 'sp500_list.xlsx'
+]
 
-# 2️⃣ Generate or update placeholder sentiment
+if not stock_files:
+    print("[!] No stock files found in cleaned folder!")
+    exit()
+
+# -----------------------------
+# Update or create sentiment CSVs
+# -----------------------------
 for file_name in stock_files:
-    company = file_name.split('.')[0]
-    stock_file = os.path.join(cleaned_folder, file_name) 
-    save_path = os.path.join(sentiment_folder, f'{company}_sentiment.csv')
+    company = os.path.splitext(file_name)[0]
+    stock_file = os.path.join(CLEANED_FOLDER, file_name)
+    sentiment_file = os.path.join(SENTIMENT_FOLDER, f'{company}_sentiment.csv')
 
     # Read stock file
     try:
@@ -26,27 +40,32 @@ for file_name in stock_files:
         else:
             df_stock = pd.read_csv(stock_file, parse_dates=['Date'])
     except Exception as e:
-        print(f"Skipping {company}: cannot read file ({e})")
+        print(f"[!] Skipping {company}: cannot read file ({e})")
         continue
 
-    # Read existing sentiment if exists
-    if os.path.exists(save_path):
-        df_sentiment = pd.read_csv(save_path, parse_dates=['Date'])
-        # Find new dates that are in stock data but not in sentiment CSV
-        new_dates = df_stock[~df_stock['Date'].isin(df_sentiment['Date'])]['Date']
+    # Create or update sentiment file
+    if os.path.exists(sentiment_file):
+        df_sentiment = pd.read_csv(sentiment_file, parse_dates=['Date'])
+        last_date = df_sentiment['Date'].max()
+        # Get new dates after last date
+        new_dates = df_stock[df_stock['Date'] > last_date]['Date']
+        # Ensure today's date is included
+        if today > last_date and today not in new_dates.values:
+            new_dates = pd.concat([new_dates, pd.Series([today])])
         if not new_dates.empty:
             new_rows = pd.DataFrame({'Date': new_dates, 'Sentiment': 0.0})
             df_sentiment = pd.concat([df_sentiment, new_rows], ignore_index=True)
             df_sentiment = df_sentiment.sort_values('Date').reset_index(drop=True)
-            df_sentiment.to_csv(save_path, index=False)
-            print(f"Updated {company}_sentiment.csv with {len(new_rows)} new dates.")
+            df_sentiment.to_csv(sentiment_file, index=False)
+            print(f"[+] Updated {company}_sentiment.csv with {len(new_rows)} new dates.")
         else:
-            print(f"{company}_sentiment.csv already up-to-date.")
+            print(f"[=] {company}_sentiment.csv already up-to-date.")
     else:
-        # Create new sentiment CSV
-        sentiment_df = pd.DataFrame({
-            'Date': df_stock['Date'],
-            'Sentiment': 0.0
-        })
-        sentiment_df.to_csv(save_path, index=False)
-        print(f"Created new placeholder sentiment CSV for {company}, {len(sentiment_df)} rows.")
+        # Create new sentiment CSV starting from stock file dates
+        stock_dates = df_stock['Date']
+        if today not in stock_dates.values:
+            stock_dates = pd.concat([stock_dates, pd.Series([today])])
+        sentiment_df = pd.DataFrame({'Date': stock_dates, 'Sentiment': 0.0})
+        sentiment_df = sentiment_df.sort_values('Date').reset_index(drop=True)
+        sentiment_df.to_csv(sentiment_file, index=False)
+        print(f"[+] Created sentiment CSV for {company}, {len(sentiment_df)} rows.")

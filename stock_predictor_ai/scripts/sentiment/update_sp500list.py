@@ -1,52 +1,58 @@
+import yfinance as yf
 import pandas as pd
 import os
 
 # Base directory of your project (AI_Quant folder)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-# This goes 3 levels up from sentiment/update_sp500list.py to AI_Quant
-
-# Paths
-RAW_FILE = os.path.join(BASE_DIR, 'data', 'raw', 'sp500_list.xlsx')
 CLEAN_FOLDER = os.path.join(BASE_DIR, 'data', 'cleaned')
+SP500_FILE = os.path.join(CLEAN_FOLDER, 'sp500_list.xlsx')
 
-# Ensure raw folder exists
-os.makedirs(os.path.dirname(RAW_FILE), exist_ok=True)
+# Ensure cleaned folder exists
+os.makedirs(CLEAN_FOLDER, exist_ok=True)
 
-# Load original sp500 list if exists, else create empty
-if os.path.exists(RAW_FILE):
-    sp500 = pd.read_excel(RAW_FILE)
-else:
-    print("[!] sp500_list.xlsx not found, creating empty DataFrame")
-    sp500 = pd.DataFrame(columns=[
-        'Symbol', 'Security', 'GICS Sector', 'GICS Sub-Industry',
-        'Headquarters Location', 'Date added', 'CIK', 'Founded'
-    ])
-
-# Normalize tickers in sp500 list
-sp500['Symbol'] = sp500['Symbol'].astype(str).str.upper().str.replace('.', '-', regex=False).str.strip()
-
-# Get tickers from clean folder
+# Get all tickers from the cleaned folder (ignore sp500_list.xlsx itself)
 cleaned_files = [
     os.path.splitext(f)[0].upper().replace('.', '-').strip()
-    for f in os.listdir(CLEAN_FOLDER) if f.endswith('.xlsx')
+    for f in os.listdir(CLEAN_FOLDER) if f.endswith('.xlsx') and f != 'sp500_list.xlsx'
 ]
 
-# Add missing tickers from clean folder
-added_count = 0
-for ticker in cleaned_files:
-    if ticker not in sp500['Symbol'].values:
-        sp500 = pd.concat([sp500, pd.DataFrame({
-            'Symbol': [ticker],
-            'Security': [None],
-            'GICS Sector': [None],
-            'GICS Sub-Industry': [None],
-            'Headquarters Location': [None],
-            'Date added': [None],
-            'CIK': [None],
-            'Founded': [None]
-        })], ignore_index=True)
-        added_count += 1
+if not cleaned_files:
+    print("[!] No stock files found in cleaned folder!")
+    exit()
 
-# Save updated sp500 list
-sp500.to_excel(RAW_FILE, index=False)
-print(f"[+] sp500_list.xlsx updated. Total tickers now: {len(sp500)} (added {added_count} new)")
+# List to store each ticker's information
+tickers_info = []
+
+for ticker in cleaned_files:
+    print(f"Fetching info for {ticker}...")
+    try:
+        t = yf.Ticker(ticker)
+        info = t.info
+
+        tickers_info.append({
+            'Symbol': ticker,
+            'Security': info.get('shortName'),
+            'GICS Sector': info.get('sector'),
+            'GICS Sub-Industry': info.get('industry'),
+            'Headquarters Location': info.get('city') + ", " + info.get('country') if info.get('city') and info.get('country') else None,
+            'Date added': None,  # Can manually fill if needed
+            'CIK': info.get('cik'),
+            'Founded': info.get('founded')
+        })
+    except Exception as e:
+        print(f"[!] Failed to fetch info for {ticker}: {e}")
+        tickers_info.append({
+            'Symbol': ticker,
+            'Security': None,
+            'GICS Sector': None,
+            'GICS Sub-Industry': None,
+            'Headquarters Location': None,
+            'Date added': None,
+            'CIK': None,
+            'Founded': None
+        })
+
+# Create DataFrame and save
+sp500_df = pd.DataFrame(tickers_info)
+sp500_df.to_excel(SP500_FILE, index=False)
+print(f"[+] sp500_list.xlsx updated. Total tickers: {len(sp500_df)}")
