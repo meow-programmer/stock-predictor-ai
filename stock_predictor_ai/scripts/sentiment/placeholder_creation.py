@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # -----------------------------
 # Directories
@@ -43,29 +43,22 @@ for file_name in stock_files:
         print(f"[!] Skipping {company}: cannot read file ({e})")
         continue
 
-    # Create or update sentiment file
+    # Determine last date in sentiment file or start from first stock date
     if os.path.exists(sentiment_file):
         df_sentiment = pd.read_csv(sentiment_file, parse_dates=['Date'])
         last_date = df_sentiment['Date'].max()
-        # Get new dates after last date
-        new_dates = df_stock[df_stock['Date'] > last_date]['Date']
-        # Ensure today's date is included
-        if today > last_date and today not in new_dates.values:
-            new_dates = pd.concat([new_dates, pd.Series([today])])
-        if not new_dates.empty:
-            new_rows = pd.DataFrame({'Date': new_dates, 'Sentiment': 0.0})
-            df_sentiment = pd.concat([df_sentiment, new_rows], ignore_index=True)
-            df_sentiment = df_sentiment.sort_values('Date').reset_index(drop=True)
-            df_sentiment.to_csv(sentiment_file, index=False)
-            print(f"[+] Updated {company}_sentiment.csv with {len(new_rows)} new dates.")
-        else:
-            print(f"[=] {company}_sentiment.csv already up-to-date.")
     else:
-        # Create new sentiment CSV starting from stock file dates
-        stock_dates = df_stock['Date']
-        if today not in stock_dates.values:
-            stock_dates = pd.concat([stock_dates, pd.Series([today])])
-        sentiment_df = pd.DataFrame({'Date': stock_dates, 'Sentiment': 0.0})
-        sentiment_df = sentiment_df.sort_values('Date').reset_index(drop=True)
-        sentiment_df.to_csv(sentiment_file, index=False)
-        print(f"[+] Created sentiment CSV for {company}, {len(sentiment_df)} rows.")
+        df_sentiment = pd.DataFrame(columns=['Date', 'Sentiment'])
+        last_date = df_stock['Date'].min() - timedelta(days=1)  # start one day before first stock date
+
+    # Generate all consecutive dates from last_date+1 to today
+    start_date = last_date + timedelta(days=1)
+    if start_date <= today:
+        all_new_dates = pd.date_range(start=start_date, end=today, freq='D')
+        new_rows = pd.DataFrame({'Date': all_new_dates, 'Sentiment': 0.0})
+        df_sentiment = pd.concat([df_sentiment, new_rows], ignore_index=True)
+        df_sentiment = df_sentiment.sort_values('Date').reset_index(drop=True)
+        df_sentiment.to_csv(sentiment_file, index=False)
+        print(f"[+] {company}_sentiment.csv updated with {len(new_rows)} new dates.")
+    else:
+        print(f"[=] {company}_sentiment.csv already up-to-date.")
