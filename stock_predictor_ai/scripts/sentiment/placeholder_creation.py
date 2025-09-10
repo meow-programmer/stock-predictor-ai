@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # -----------------------------
 # Directories
@@ -26,12 +26,12 @@ if not stock_files:
     exit()
 
 # -----------------------------
-# Update or create sentiment CSVs
+# Update or create sentiment Excel files
 # -----------------------------
 for file_name in stock_files:
     company = os.path.splitext(file_name)[0]
     stock_file = os.path.join(CLEANED_FOLDER, file_name)
-    sentiment_file = os.path.join(SENTIMENT_FOLDER, f'{company}_sentiment.csv')
+    sentiment_file = os.path.join(SENTIMENT_FOLDER, f'{company}_sentiment.xlsx')
 
     # Read stock file
     try:
@@ -43,22 +43,24 @@ for file_name in stock_files:
         print(f"[!] Skipping {company}: cannot read file ({e})")
         continue
 
-    # Determine last date in sentiment file or start from first stock date
+    # Only trading dates from stock file
+    trading_dates = df_stock['Date'].sort_values().unique()
+
+    # Read existing sentiment Excel if exists
     if os.path.exists(sentiment_file):
-        df_sentiment = pd.read_csv(sentiment_file, parse_dates=['Date'])
+        df_sentiment = pd.read_excel(sentiment_file, parse_dates=['Date'], engine='openpyxl')
         last_date = df_sentiment['Date'].max()
     else:
         df_sentiment = pd.DataFrame(columns=['Date', 'Sentiment'])
-        last_date = df_stock['Date'].min() - timedelta(days=1)  # start one day before first stock date
+        last_date = pd.Timestamp.min  # very early date
 
-    # Generate all consecutive dates from last_date+1 to today
-    start_date = last_date + timedelta(days=1)
-    if start_date <= today:
-        all_new_dates = pd.date_range(start=start_date, end=today, freq='D')
-        new_rows = pd.DataFrame({'Date': all_new_dates, 'Sentiment': 0.0})
+    # Determine new dates to add (only trading dates after last_date)
+    new_dates = [d for d in trading_dates if d > last_date]
+    if new_dates:
+        new_rows = pd.DataFrame({'Date': new_dates, 'Sentiment': 0.0})
         df_sentiment = pd.concat([df_sentiment, new_rows], ignore_index=True)
         df_sentiment = df_sentiment.sort_values('Date').reset_index(drop=True)
-        df_sentiment.to_csv(sentiment_file, index=False)
-        print(f"[+] {company}_sentiment.csv updated with {len(new_rows)} new dates.")
+        df_sentiment.to_excel(sentiment_file, index=False, engine='openpyxl')
+        print(f"[+] {company}_sentiment.xlsx updated with {len(new_rows)} new trading dates.")
     else:
-        print(f"[=] {company}_sentiment.csv already up-to-date.")
+        print(f"[=] {company}_sentiment.xlsx already up-to-date.")
