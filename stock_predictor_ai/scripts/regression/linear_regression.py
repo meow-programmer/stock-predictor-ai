@@ -13,7 +13,7 @@ df_full = pd.read_excel(file_path)
 
 # ==== Feature Engineering ====
 df_full['Date'] = pd.to_datetime(df_full['Date'])
-df_full.sort_values('Date', inplace=True)
+df_full.sort_values('Date', inplace=True)   
 df_full['SMA_50'] = df_full[f'Close_{stock_symbol}'].rolling(window=50).mean()
 df_full.dropna(subset=['SMA_50'], inplace=True)
 
