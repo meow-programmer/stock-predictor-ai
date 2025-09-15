@@ -27,11 +27,17 @@ AI_quant/
 │    │    ├──
 │    │    ├──
 │    │    ├──
+│    │    ├──
+│    │    ├──
 │    │    └── stock_update/
 │    │
 │    ├── Backups/
 │    │    ├── backup_clean_data.txt
 │    │    ├── backup_fetch_data.txt
+│    │    ├──
+│    │    ├──
+│    │    ├──
+│    │    ├──
 │    │    ├── backup_graph_plot.txt
 │    │    ├── backup_live_update.txt
 │    │
