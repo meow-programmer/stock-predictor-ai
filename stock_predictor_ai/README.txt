@@ -17,12 +17,14 @@ AI_quant/
 │    │   ├── raw/
 │    │   ├──
 │    │   ├──
-│    │   ├──
 │    │   └── cleaned/
 │    │
 │    ├── scripts/
 │    │    ├── exploratory_analysis/
 │    │    ├── data_cleaning/
+│    │    ├──
+│    │    ├──
+│    │    ├──
 │    │    ├──
 │    │    ├──
 │    │    └── stock_update/
