@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import yfinance as yf
+import random
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # -----------------------------
@@ -55,19 +56,41 @@ else:
     # Remove delisted from sp500 DataFrame
     sp500 = sp500[~sp500['Symbol'].isin(delisted)]
 
-    # Remove delisted files from raw folder
+    # Remove delisted files from raw + cleaned
     for ticker in delisted:
-        raw_path = os.path.join(RAW_FOLDER, f"{ticker}.xlsx")
-        if os.path.exists(raw_path):
-            os.remove(raw_path)
-            print(f"[+] Removed {raw_path}")
+        for folder in [RAW_FOLDER, CLEAN_FOLDER]:
+            file_path = os.path.join(folder, f"{ticker}.xlsx")
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                print(f"[+] Removed {file_path}")
 
-    # Remove delisted files from cleaned folder
-    for ticker in delisted:
-        clean_path = os.path.join(CLEAN_FOLDER, f"{ticker}.xlsx")
-        if os.path.exists(clean_path):
-            os.remove(clean_path)
-            print(f"[+] Removed {clean_path}")
+# -----------------------------
+# Extra option: delete N random tickers
+# -----------------------------
+delete_random = input("Do you want to delete random tickers? (y/n): ").strip().lower()
+
+if delete_random == "y":
+    try:
+        n = int(input("How many random tickers do you want to delete?: ").strip())
+        if n > 0 and n <= len(sp500):
+            random_tickers = random.sample(sp500['Symbol'].tolist(), n)
+            print(f"[!] Randomly deleting {n} tickers: {random_tickers}")
+
+            # Remove from dataframe
+            sp500 = sp500[~sp500['Symbol'].isin(random_tickers)]
+
+            # Remove files
+            for ticker in random_tickers:
+                for folder in [RAW_FOLDER, CLEAN_FOLDER]:
+                    file_path = os.path.join(folder, f"{ticker}.xlsx")
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                        print(f"[+] Removed {file_path}")
+
+        else:
+            print(f"[!] Invalid number. Must be between 1 and {len(sp500)}")
+    except ValueError:
+        print("[!] Invalid input. Skipping random delete.")
 
 # -----------------------------
 # Save updated sp500_list.xlsx
