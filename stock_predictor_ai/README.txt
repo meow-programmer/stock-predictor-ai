@@ -23,6 +23,8 @@ AI_quant/
 │    ├── scripts/
 │    │    ├── exploratory_analysis/
 │    │    ├── data_cleaning/
+│    │    ├──
+│    │    ├──
 │    │    └── stock_update/
 │    │
 │    ├── Backups/
