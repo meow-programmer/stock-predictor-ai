@@ -10,8 +10,7 @@ AI_quant/
 │    ├── things_to_study.txt
 │    ├── checklist.txt
 │    ├── project_for_quant.txt
-│    ├── the_why_how_and_whom.txt
-│    └──
+│    └── the_why_how_and_whom.txt
 │
 ├── stock-predictor-ai/
 │    ├── data/
