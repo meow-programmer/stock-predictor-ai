@@ -15,6 +15,9 @@ AI_quant/
 ├── stock-predictor-ai/
 │    ├── data/
 │    │   ├── raw/
+│    │   ├──
+│    │   ├──
+│    │   ├──
 │    │   └── cleaned/
 │    │
 │    ├── scripts/
