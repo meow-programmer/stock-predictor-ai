@@ -10,21 +10,34 @@ AI_quant/
 │    ├── things_to_study.txt
 │    ├── checklist.txt
 │    ├── project_for_quant.txt
-│    ├── the_why_how_and_whom.txt
+│    └── the_why_how_and_whom.txt
 │
 ├── stock-predictor-ai/
 │    ├── data/
 │    │   ├── raw/
+│    │   ├──
+│    │   ├──
 │    │   └── cleaned/
 │    │
 │    ├── scripts/
 │    │    ├── exploratory_analysis/
 │    │    ├── data_cleaning/
+│    │    ├──
+│    │    ├──
+│    │    ├──
+│    │    ├──
+│    │    ├──
+│    │    ├──
+│    │    ├──
 │    │    └── stock_update/
 │    │
 │    ├── Backups/
 │    │    ├── backup_clean_data.txt
 │    │    ├── backup_fetch_data.txt
+│    │    ├──
+│    │    ├──
+│    │    ├──
+│    │    ├──
 │    │    ├── backup_graph_plot.txt
 │    │    ├── backup_live_update.txt
 │    │
