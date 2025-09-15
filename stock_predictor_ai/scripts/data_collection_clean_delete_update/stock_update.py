@@ -22,7 +22,7 @@ for file in files:
         df_live = stock.history(period="1d", interval="1d")
 
         if df_live.empty:
-            print(f"⚠ No data for {ticker}. Skipping.")
+            print(f"⚠ No data for {ticker}. Skipping. Possibly delisted please check.")
             continue
 
         # Extract today's row
