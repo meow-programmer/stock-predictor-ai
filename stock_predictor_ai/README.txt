@@ -11,6 +11,7 @@ AI_quant/
 │    ├── checklist.txt
 │    ├── project_for_quant.txt
 │    ├── the_why_how_and_whom.txt
+│    └──
 │
 ├── stock-predictor-ai/
 │    ├── data/
