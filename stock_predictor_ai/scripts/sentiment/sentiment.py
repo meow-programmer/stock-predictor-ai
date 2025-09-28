@@ -22,6 +22,7 @@ analyzer = SentimentIntensityAnalyzer()
 # -----------------------------
 # Get tickers
 # -----------------------------
+
 stock_files = [
     f for f in os.listdir(CLEANED_FOLDER)
     if f.endswith('.xlsx') and f != 'sp500_list.xlsx'
