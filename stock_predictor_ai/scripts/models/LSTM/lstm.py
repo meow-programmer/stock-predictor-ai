@@ -17,6 +17,7 @@ if not os.path.exists(file_path):
     print(f"Error: File '{file_path}' not found!")
     exit()
 
+
 # Read stock data
 data = pd.read_csv(file_path)
 
