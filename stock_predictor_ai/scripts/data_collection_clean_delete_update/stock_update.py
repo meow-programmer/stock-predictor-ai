@@ -4,25 +4,26 @@ import yfinance as yf
 from datetime import datetime
 
 # Folder path
-cleaned_folder = "stock_predictor_ai/data/cleaned"
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+CLEANED_FOLDER = os.path.join(BASE_DIR, 'data', 'cleaned')
 
-# Get all Excel files (like 'ABT.xlsx')
-files = [f for f in os.listdir(cleaned_folder) if f.endswith(".xlsx")]
+# Get all CSV files (like 'ABT.csv')
+files = [f for f in os.listdir(CLEANED_FOLDER) if f.endswith(".csv")]
 
 for file in files:
-    ticker = file.replace(".xlsx", "")
-    file_path = os.path.join(cleaned_folder, file)
+    ticker = file.replace(".csv", "")
+    file_path = os.path.join(CLEANED_FOLDER, file)
 
     try:
-        # Read the existing Excel file
-        df = pd.read_excel(file_path)
+        # Read the existing CSV file
+        df = pd.read_csv(file_path, parse_dates=['Date'])
 
         # Fetch today's data
         stock = yf.Ticker(ticker)
         df_live = stock.history(period="1d", interval="1d")
 
         if df_live.empty:
-            print(f"⚠ No data for {ticker}. Skipping. Possibly delisted please check.")
+            print(f"⚠ No data for {ticker}. Skipping. Possibly delisted, please check.")
             continue
 
         # Extract today's row
@@ -44,9 +45,9 @@ for file in files:
             print(f"⏩ {ticker}: Already has today's data.")
             continue
 
-        # Append and save
+        # Append and save as CSV
         df_updated = pd.concat([df, new_row], ignore_index=True)
-        df_updated.to_excel(file_path, index=False)
+        df_updated.to_csv(file_path, index=False)
         print(f"✅ Updated {ticker}")
 
     except Exception as e:

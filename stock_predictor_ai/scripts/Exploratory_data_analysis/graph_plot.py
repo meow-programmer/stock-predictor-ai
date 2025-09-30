@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
 import os
+import matplotlib.dates as mdates
 
 # Base directory setup
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -14,10 +15,24 @@ print("2. Compare two stocks")
 print("3. View volatility table and volatility graph for specific stock")
 choice = input("Enter 1, 2 or 3: ").strip()
 
+def format_dates(ax, data):
+    """Format x-axis dates to prevent overcrowding"""
+    if len(data) > 365*2:  # more than 2 years of data
+        ax.xaxis.set_major_locator(mdates.YearLocator())
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+        ax.xaxis.set_minor_locator(mdates.MonthLocator(bymonth=(1,7)))
+    elif len(data) > 90:
+        ax.xaxis.set_major_locator(mdates.MonthLocator(interval=3))
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+    else:
+        ax.xaxis.set_major_locator(mdates.DayLocator(interval=5))
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    plt.gcf().autofmt_xdate()
+
 if choice == '1':
     stock_symbol = input("Enter stock symbol (e.g., ZBH): ").upper()
-    file_path = os.path.join(cleaned_path, f'{stock_symbol}.xlsx')
-    df = pd.read_excel(file_path)
+    file_path = os.path.join(cleaned_path, f'{stock_symbol}.csv')
+    df = pd.read_csv(file_path, parse_dates=['Date'])
 
     # Moving averages
     df['SMA'] = df['Close_' + stock_symbol].rolling(window=50).mean()
@@ -25,17 +40,15 @@ if choice == '1':
 
     # Ask if local peaks/dips are to be shown
     show_extrema = input("Show local dips and peaks? (yes/no): ").strip().lower()
+    plt.figure(figsize=(12, 6))
+    close_col = 'Close_' + stock_symbol
     if show_extrema == "yes":
-        print("\nLocal Peaks = short-term high points before price drops.")
-        print("Local Dips  = short-term low points before price rises again.\n")
-        close_col = 'Close_' + stock_symbol
         peaks, _ = find_peaks(df[close_col], distance=5)
         dips, _ = find_peaks(-df[close_col], distance=5)
         plt.scatter(df['Date'][peaks], df[close_col][peaks], color='green', marker='^', label='Peaks')
         plt.scatter(df['Date'][dips], df[close_col][dips], color='red', marker='v', label='Dips')
 
     # Plot high, low, SMA, EMA
-    plt.figure(figsize=(12, 6))
     plt.plot(df['Date'], df['High_' + stock_symbol], label='High Price', color='blue')
     plt.plot(df['Date'], df['Low_' + stock_symbol], label='Low Price', color='orange')
     plt.plot(df['Date'], df['SMA'], label='SMA', color='purple')
@@ -58,6 +71,7 @@ if choice == '1':
                  arrowprops=dict(facecolor='red', arrowstyle='->'),
                  fontsize=8, color='red')
 
+    format_dates(plt.gca(), df['Date'])
     plt.xlabel('Date')
     plt.ylabel('Price')
     plt.title(f"{stock_symbol} Price Analysis")
@@ -65,20 +79,22 @@ if choice == '1':
     plt.tight_layout()
     plt.show()
 
-if choice == '2':
+elif choice == '2':
     stock1 = input("Enter first stock symbol: ").upper()
     stock2 = input("Enter second stock symbol: ").upper()
 
-    file1 = os.path.join(cleaned_path, f'{stock1}.xlsx')
-    file2 = os.path.join(cleaned_path, f'{stock2}.xlsx')
+    file1 = os.path.join(cleaned_path, f'{stock1}.csv')
+    file2 = os.path.join(cleaned_path, f'{stock2}.csv')
 
-    df1 = pd.read_excel(file1)
-    df2 = pd.read_excel(file2)
+    df1 = pd.read_csv(file1, parse_dates=['Date'])
+    df2 = pd.read_csv(file2, parse_dates=['Date'])
 
     plt.figure(figsize=(12, 6))
     plt.plot(df1['Date'], df1['Close_' + stock1], label=f"{stock1} Close", color='blue')
     plt.plot(df2['Date'], df2['Close_' + stock2], label=f"{stock2} Close", color='green')
 
+    # Format dates for first stock (assuming similar date ranges)
+    format_dates(plt.gca(), df1['Date'])
     plt.xlabel("Date")
     plt.ylabel("Closing Price")
     plt.title(f"Comparison: {stock1} vs {stock2}")
@@ -87,12 +103,9 @@ if choice == '2':
     plt.show()
 
 elif choice == '3':
-    print("What does volatility mean?")
-    print("It is the measure of how stable your stock is over time. A stock that moves up and down rapidly is highly volatile, while one that moves steadily is less volatile.")
-    
     stock = input("Enter which stock you want to see volatility table:").upper()
-    file_path = os.path.join(cleaned_path, f'{stock}.xlsx')
-    df = pd.read_excel(file_path)
+    file_path = os.path.join(cleaned_path, f'{stock}.csv')
+    df = pd.read_csv(file_path, parse_dates=['Date'])
 
     # Calculate volatility
     df['Volatility'] = df['Close_' + stock].rolling(window=20).std()
@@ -108,12 +121,13 @@ elif choice == '3':
         ]
     }).round(2)
 
-    # === Interactive Mode: Allow both plots to show at once ===
-    plt.ion()  # Enable interactive mode
+    # Interactive mode for both plots
+    plt.ion()
 
-    # ----- Window 1: Volatility Graph -----
+    # Volatility Graph
     fig1 = plt.figure(figsize=(12, 5))
     plt.plot(df['Date'], df['Volatility'], label='Volatility (20-day STD)', color='darkred')
+    format_dates(plt.gca(), df['Date'])
     plt.xlabel("Date")
     plt.ylabel("Volatility")
     plt.title(f"{stock} Volatility Over Time")
@@ -123,7 +137,7 @@ elif choice == '3':
     fig1.canvas.manager.set_window_title(f"{stock} Volatility Graph")
     fig1.show()
 
-    # ----- Window 2: Volatility Table -----
+    # Volatility Table
     fig2, ax2 = plt.subplots(figsize=(5, 3))
     ax2.axis('off')
     table = pd.plotting.table(ax2, volatility_stats_df, loc='center', colWidths=[0.5, 0.3])
@@ -137,11 +151,5 @@ elif choice == '3':
 
     input("Press Enter to exit...")
 
-
-
-
 else:
     print("Invalid input.")
-
-
-

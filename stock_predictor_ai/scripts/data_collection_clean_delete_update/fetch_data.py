@@ -39,13 +39,13 @@ choice = input("Enter 1, 2, 3, or 4: ").strip()
 # --------------------------
 def download_stocks(tickers):
     for ticker in tickers:
-        file_path = os.path.join(RAW_FOLDER, f'{ticker}.xlsx')
+        file_path = os.path.join(RAW_FOLDER, f'{ticker}.csv')
         if os.path.exists(file_path):
             print(f"[=] Skipped (already exists): {ticker}")
             continue
         try:
             df = yf.download(ticker, period='max')
-            df.to_excel(file_path)
+            df.to_csv(file_path)  # Save as CSV
             print(f"[+] Saved: {ticker}")
         except Exception as e:
             print(f"[!] Failed: {ticker} - {e}")
@@ -53,7 +53,7 @@ def download_stocks(tickers):
 # --------------------------
 # Option handling
 # --------------------------
-existing_files = [os.path.splitext(f)[0] for f in os.listdir(RAW_FOLDER) if f.endswith('.xlsx')]
+existing_files = [os.path.splitext(f)[0] for f in os.listdir(RAW_FOLDER) if f.endswith('.csv')]
 
 if choice == '1':
     remaining_tickers = [t for t in all_tickers if t not in existing_files]
@@ -88,7 +88,7 @@ elif choice == '3':
         download_stocks(random_stocks)
 
 elif choice == '4':
-    print("Exiting...")
+    print("Exiting...") 
 
 else:
     print("Invalid input. Please run again and enter 1, 2, 3, or 4.")

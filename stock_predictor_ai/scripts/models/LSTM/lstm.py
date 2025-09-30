@@ -11,14 +11,14 @@ stock_symbol = input("Enter stock symbol (e.g., AAPL): ").upper()
 
 # Build file path relative to this script
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-file_path = os.path.join(base_dir, 'data', 'cleaned', f'{stock_symbol}.xlsx')
+file_path = os.path.join(base_dir, 'data', 'cleaned', f'{stock_symbol}.csv')
 
 if not os.path.exists(file_path):
     print(f"Error: File '{file_path}' not found!")
     exit()
 
-#  Read stock data
-data = pd.read_excel(file_path)
+# Read stock data
+data = pd.read_csv(file_path)
 
 # Dynamically find the closing price column for this stock
 close_col = None
@@ -34,11 +34,11 @@ if close_col is None:
 # Extract only Close price
 prices = data[close_col].values.reshape(-1, 1)
 
-#  Scale data
+# Scale data
 scaler = MinMaxScaler(feature_range=(0, 1))
 scaled_prices = scaler.fit_transform(prices)
 
-#  Create sequences for LSTM
+# Create sequences for LSTM
 seq_length = 60
 X, y = [], []
 for i in range(seq_length, len(scaled_prices)):
@@ -54,7 +54,7 @@ model.add(LSTM(50))
 model.add(Dense(1))
 model.compile(optimizer='adam', loss='mean_squared_error')
 
-# Train model (short epochs for quick testing)
+# Train model (short epochs for testing)
 print("Training LSTM model...")
 model.fit(X, y, epochs=20, batch_size=32, verbose=1)
 
@@ -66,7 +66,6 @@ current_seq = last_seq.copy()
 for _ in range(7):
     pred = model.predict(current_seq)
     next_week_preds.append(pred[0, 0])
-    # append predicted value to current sequence
     pred_reshaped = pred.reshape((1, 1, 1))
     current_seq = np.append(current_seq[:, 1:, :], pred_reshaped, axis=1)
 
@@ -88,5 +87,3 @@ plt.xlabel("Days")
 plt.ylabel("Price")
 plt.legend()
 plt.show()
-
-
