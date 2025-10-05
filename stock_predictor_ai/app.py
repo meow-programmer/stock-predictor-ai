@@ -7,6 +7,7 @@ from scripts.models.regression.linear_regression import predict_linear_regressio
 from scripts.models.regression.multiple_regression import predict_multiple_regression
 from scripts.models.XGBoost.xgboost_model import predict_xgb
 from scripts.models.LSTM.lstm import predict_lstm
+from scripts.Exploratory_data_analysis.graph_plot import plot_stock_graph  # ✅ make sure function name matches
 
 # === Paths ===
 base_dir = os.path.abspath(os.path.dirname(__file__))
@@ -14,7 +15,7 @@ cleaned_path = os.path.join(base_dir, "data", "cleaned")
 
 # === UI Title ===
 st.title("📈 Stock Prediction Dashboard")
-st.write("Select a stock from the list below to see model predictions:")
+st.write("Select a stock from the list below to see model predictions and graph.")
 
 # === Get all available CSV files ===
 stocks = [f.replace(".csv", "") for f in os.listdir(cleaned_path) if f.endswith(".csv")]
@@ -24,10 +25,23 @@ if not stocks:
 else:
     selected_stock = st.selectbox("Choose a stock:", stocks)
 
-    if st.button("Predict"):
-        st.write(f"### Predictions for {selected_stock}")
+    if st.button("Predict and Show Graph"):
+        st.write(f"## 📊 Analysis for {selected_stock}")
 
-        # Run models one by one
+        # --- 📈 Plot Graph ---
+        try:
+            graph_data = plot_stock_graph(selected_stock)
+            if graph_data:
+                st.pyplot(graph_data["figure"])
+                st.write(f"**Latest SMA (50):** {graph_data['latest_SMA']}")
+                st.write(f"**Latest EMA (20):** {graph_data['latest_EMA']}")
+                st.write(f"**Latest Volatility:** {graph_data['latest_volatility']}")
+            else:
+                st.warning("No graph data found or error loading stock data.")
+        except Exception as e:
+            st.error(f"Graph error: {e}")
+
+        # --- 🤖 Run Predictions ---
         try:
             lin_pred = predict_linear_regression(selected_stock)
             mult_pred = predict_multiple_regression(selected_stock)
@@ -56,7 +70,8 @@ else:
                 ],
             }
 
+            st.subheader("📉 Model Predictions")
             st.dataframe(pd.DataFrame(data))
 
         except Exception as e:
-            st.error(f"Error: {e}")
+            st.error(f"Model prediction error: {e}")
