@@ -43,11 +43,14 @@ else:
 
         # --- 🤖 Run Predictions ---
         try:
-            lin_pred = predict_linear_regression(selected_stock)
-            mult_pred = predict_multiple_regression(selected_stock)
-            xgb_pred = predict_xgb(selected_stock)
-            lstm_pred = predict_lstm(selected_stock)
+            csv_path = os.path.join(cleaned_path, f"{selected_stock}.csv")
+            lin_pred = predict_linear_regression(csv_path)
+            mult_pred = predict_multiple_regression(csv_path)
+            xgb_pred = predict_xgb(selected_stock)  # if it handles symbol internally
+            lstm_pred = predict_lstm(selected_stock)  # if it handles symbol internally
 
+
+            xgb_pred = predict_xgb(selected_stock)
             data = {
                 "Model": ["Linear Regression", "Multiple Regression", "XGBoost", "LSTM"],
                 "Predicted Price": [
@@ -69,6 +72,7 @@ else:
                     lstm_pred.get("rmse", "—")
                 ],
             }
+
 
             st.subheader("📉 Model Predictions")
             st.dataframe(pd.DataFrame(data))

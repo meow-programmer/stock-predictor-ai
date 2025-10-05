@@ -13,7 +13,7 @@ def predict_lstm(stock_symbol):
     """
 
     # === File path ===
-    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..','..'))
     file_path = os.path.join(base_dir, 'data', 'cleaned', f'{stock_symbol}.csv')
 
     if not os.path.exists(file_path):
