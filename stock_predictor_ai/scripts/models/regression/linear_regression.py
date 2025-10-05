@@ -1,3 +1,4 @@
+# linear_regression.py
 import pandas as pd
 import numpy as np
 from sklearn.linear_model import LinearRegression
@@ -5,61 +6,79 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 from datetime import timedelta
 import os
 
-# --- Setup ---
-stock_symbol = input("Enter stock symbol (e.g., ABT): ").upper()
-base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
-file_path = os.path.join(base_dir, 'data', 'cleaned', f'{stock_symbol}.csv')
+def predict_linear_regression(csv_path):
+    """
+    Run linear regression on a stock CSV and predict the next week's closing price.
 
-if not os.path.exists(file_path):
-    print("File not found! Available files:", os.listdir(os.path.join(base_dir, 'data', 'cleaned')))
-    exit()
+    Parameters
+    ----------
+    csv_path : str
+        Full path to the CSV file (e.g., '.../data/cleaned/AAPL.csv').
 
-# --- Load CSV ---
-df = pd.read_csv(file_path)
-df['Date'] = pd.to_datetime(df['Date'])
-df.sort_values('Date', inplace=True)
+    Returns
+    -------
+    dict
+        {
+            "prediction": float,
+            "latest_date": datetime,
+            "next_week_date": datetime,
+            "metrics": {
+                "MAE": float,
+                "RMSE": float
+            }
+        }
+    """
+    # --- Load CSV ---
+    df = pd.read_csv(csv_path)
+    df['Date'] = pd.to_datetime(df['Date'])
+    df.sort_values('Date', inplace=True)
 
-close_col = f'Close_{stock_symbol}'
-if close_col not in df.columns:
-    print(f"Column {close_col} not found in CSV!")
-    exit()
+    stock_symbol = os.path.basename(csv_path).replace(".csv", "")
+    close_col = f'Close_{stock_symbol}'
 
-# --- SMA Feature ---
-df['SMA_50'] = df[close_col].rolling(window=50).mean()
-df.dropna(subset=['SMA_50'], inplace=True)
-if df.empty:
-    print("Not enough data to compute SMA_50.")
-    exit()
+    if close_col not in df.columns:
+        raise ValueError(f"Column {close_col} not found in {csv_path}")
 
-# --- Prepare target ---
-df['Target_Close'] = df[close_col].shift(-7)
-df.dropna(subset=['Target_Close'], inplace=True)
+    # --- SMA Feature ---
+    df['SMA_50'] = df[close_col].rolling(window=50).mean()
+    df.dropna(subset=['SMA_50'], inplace=True)
+    if df.empty:
+        raise ValueError("Not enough data to compute SMA_50.")
 
-X = df[['SMA_50']]
-y = df['Target_Close']
+    # --- Prepare target ---
+    df['Target_Close'] = df[close_col].shift(-7)
+    df.dropna(subset=['Target_Close'], inplace=True)
 
-# --- Train Model ---
-model = LinearRegression()
-model.fit(X, y)
-y_pred = model.predict(X)
+    X = df[['SMA_50']]
+    y = df['Target_Close']
 
-# --- Predict next 7 trading days ---
-latest_sma = df.iloc[-1]['SMA_50']
-predicted_next = model.predict([[latest_sma]])[0]
+    # --- Train Model ---
+    model = LinearRegression()
+    model.fit(X, y)
+    y_pred = model.predict(X)
 
-# --- Next trading date ---
-latest_date = df.iloc[-1]['Date']
-future_days = df[df['Date'] > latest_date]['Date']
-if len(future_days) >= 5:
-    next_week_date = future_days.iloc[4]
-else:
-    next_week_date = latest_date + timedelta(days=7)
+    # --- Predict next 7 trading days ---
+    latest_sma = df.iloc[-1]['SMA_50']
+    predicted_next = model.predict([[latest_sma]])[0]
 
-# --- Metrics ---
-mae_val = mean_absolute_error(y, y_pred)
-rmse_val = np.sqrt(mean_squared_error(y, y_pred))
+    # --- Next trading date ---
+    latest_date = df.iloc[-1]['Date']
+    future_days = df[df['Date'] > latest_date]['Date']
+    if len(future_days) >= 5:
+        next_week_date = future_days.iloc[4]
+    else:
+        next_week_date = latest_date + timedelta(days=7)
 
-# --- Output ---
-print(f"\nMAE: {mae_val:.2f}")
-print(f"RMSE: {rmse_val:.2f}")
-print(f"Prediction from {latest_date.date()} to {next_week_date.date()}: ${predicted_next:.2f}")
+    # --- Metrics ---
+    mae_val = mean_absolute_error(y, y_pred)
+    rmse_val = np.sqrt(mean_squared_error(y, y_pred))
+
+    return {
+        "prediction": predicted_next,
+        "latest_date": latest_date,
+        "next_week_date": next_week_date,
+        "metrics": {
+            "MAE": mae_val,
+            "RMSE": rmse_val
+        }
+    }
