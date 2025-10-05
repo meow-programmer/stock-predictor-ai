@@ -47,9 +47,8 @@ else:
         # --- 🤖 Run Predictions ---
         try:
             csv_path = os.path.join(cleaned_path, f"{selected_stock}.csv")
-
             lin_pred = predict_linear_regression(csv_path)
-            mult_pred = predict_multiple_regression(selected_stock)   # ✅ FIXED HERE
+            mult_pred = predict_multiple_regression(selected_stock)   
             xgb_pred = predict_xgb(selected_stock)
             lstm_pred = predict_lstm(selected_stock)
 

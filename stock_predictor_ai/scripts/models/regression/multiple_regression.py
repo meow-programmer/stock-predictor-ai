@@ -10,26 +10,12 @@ from ta.volatility import BollingerBands
 
 def predict_multiple_regression(stock_symbol):
     """
-    Run multiple regression using various technical indicators to predict next week's closing price.
-
-    Parameters
-    ----------
-    stock_symbol : str
-        Stock symbol (e.g., 'AAPL')
-
-    Returns
-    -------
-    dict
-        {
-            "prediction": float,
-            "mae": float,
-            "rmse": float,
-            "latest_date": str,
-            "next_week_date": str
-        }
+    Run multiple regression using technical indicators to predict next week's closing price.
+    Works with CSVs that have either 'Close' or 'Close_<symbol>' columns.
     """
+
     # === Setup Paths ===
-    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', ))
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
     cleaned_path = os.path.join(base_dir, 'data', 'cleaned')
     csv_path = os.path.join(cleaned_path, f'{stock_symbol}.csv')
 
@@ -38,32 +24,36 @@ def predict_multiple_regression(stock_symbol):
 
     # === Load Data ===
     df = pd.read_csv(csv_path)
-    if f'Close_{stock_symbol}' not in df.columns:
-        return {"error": f"Column Close_{stock_symbol} not found in file."}
+
+    # --- Detect Close column style ---
+    possible_close_cols = [f'Close_{stock_symbol}', 'Close']
+    close_col = next((col for col in possible_close_cols if col in df.columns), None)
+    if close_col is None:
+        return {"error": f"No valid Close column found for {stock_symbol}."}
 
     df['Date'] = pd.to_datetime(df['Date'])
     df.sort_values('Date', inplace=True)
     original_df = df.copy()
 
     # === Feature Engineering ===
-    df['SMA_10'] = df[f'Close_{stock_symbol}'].rolling(window=10).mean()
-    df['SMA_20'] = df[f'Close_{stock_symbol}'].rolling(window=20).mean()
-    df['Volatility_10'] = df[f'Close_{stock_symbol}'].rolling(window=10).std()
+    df['SMA_10'] = df[close_col].rolling(window=10).mean()
+    df['SMA_20'] = df[close_col].rolling(window=20).mean()
+    df['Volatility_10'] = df[close_col].rolling(window=10).std()
 
-    rsi = RSIIndicator(close=df[f'Close_{stock_symbol}'], window=14)
+    rsi = RSIIndicator(close=df[close_col], window=14)
     df["RSI_14"] = rsi.rsi()
 
-    macd = MACD(close=df[f'Close_{stock_symbol}'])
+    macd = MACD(close=df[close_col])
     df["MACD"] = macd.macd()
     df["MACD_Signal"] = macd.macd_signal()
     df["MACD_Diff"] = df["MACD"] - df["MACD_Signal"]
 
-    bb = BollingerBands(close=df[f'Close_{stock_symbol}'], window=20, window_dev=2)
+    bb = BollingerBands(close=df[close_col], window=20, window_dev=2)
     df["BB_Upper"] = bb.bollinger_hband()
     df["BB_Lower"] = bb.bollinger_lband()
     df["BB_Width"] = df["BB_Upper"] - df["BB_Lower"]
 
-    df['Target_Close'] = df[f'Close_{stock_symbol}'].shift(-5)
+    df['Target_Close'] = df[close_col].shift(-5)
 
     features = [
         'SMA_10', 'SMA_20', 'Volatility_10',
@@ -71,7 +61,6 @@ def predict_multiple_regression(stock_symbol):
         'BB_Upper', 'BB_Lower', 'BB_Width'
     ]
     df.dropna(inplace=True)
-
     if df.empty:
         return {"error": "Not enough data after feature engineering."}
 
@@ -89,19 +78,19 @@ def predict_multiple_regression(stock_symbol):
 
     # === Predict next week ===
     latest_valid = original_df.tail(50).copy()
-    latest_valid['SMA_10'] = latest_valid[f'Close_{stock_symbol}'].rolling(window=10).mean()
-    latest_valid['SMA_20'] = latest_valid[f'Close_{stock_symbol}'].rolling(window=20).mean()
-    latest_valid['Volatility_10'] = latest_valid[f'Close_{stock_symbol}'].rolling(window=10).std()
+    latest_valid['SMA_10'] = latest_valid[close_col].rolling(window=10).mean()
+    latest_valid['SMA_20'] = latest_valid[close_col].rolling(window=20).mean()
+    latest_valid['Volatility_10'] = latest_valid[close_col].rolling(window=10).std()
 
-    rsi = RSIIndicator(close=latest_valid[f'Close_{stock_symbol}'], window=14)
+    rsi = RSIIndicator(close=latest_valid[close_col], window=14)
     latest_valid['RSI_14'] = rsi.rsi()
 
-    macd = MACD(close=latest_valid[f'Close_{stock_symbol}'])
+    macd = MACD(close=latest_valid[close_col])
     latest_valid['MACD'] = macd.macd()
     latest_valid['MACD_Signal'] = macd.macd_signal()
     latest_valid['MACD_Diff'] = latest_valid['MACD'] - latest_valid['MACD_Signal']
 
-    bb = BollingerBands(close=latest_valid[f'Close_{stock_symbol}'], window=20, window_dev=2)
+    bb = BollingerBands(close=latest_valid[close_col], window=20, window_dev=2)
     latest_valid['BB_Upper'] = bb.bollinger_hband()
     latest_valid['BB_Lower'] = bb.bollinger_lband()
     latest_valid['BB_Width'] = latest_valid['BB_Upper'] - latest_valid['BB_Lower']
