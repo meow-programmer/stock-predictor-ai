@@ -2,22 +2,22 @@ import streamlit as st
 import os
 import pandas as pd
 
-# === Import all model functions ===
+# === Import model functions ===
 from scripts.models.regression.linear_regression import predict_linear_regression
 from scripts.models.regression.multiple_regression import predict_multiple_regression
 from scripts.models.XGBoost.xgboost_model import predict_xgb
 from scripts.models.LSTM.lstm import predict_lstm
-from scripts.Exploratory_data_analysis.graph_plot import plot_stock_graph  # ✅ make sure function name matches
+from scripts.Exploratory_data_analysis.graph_plot import plot_stock_graph
 
 # === Paths ===
 base_dir = os.path.abspath(os.path.dirname(__file__))
 cleaned_path = os.path.join(base_dir, "data", "cleaned")
 
-# === UI Title ===
+# === UI ===
 st.title("📈 Stock Prediction Dashboard")
-st.write("Select a stock from the list below to see model predictions and graph.")
+st.write("Select a stock to view predictions from multiple AI models.")
 
-# === Get all available CSV files ===
+# === List all stocks ===
 stocks = [f.replace(".csv", "") for f in os.listdir(cleaned_path) if f.endswith(".csv")]
 
 if not stocks:
@@ -29,28 +29,31 @@ else:
         st.write(f"## 📊 Analysis for {selected_stock}")
 
         # --- 📈 Plot Graph ---
+        latest_SMA, latest_EMA = "—", "—"
         try:
             graph_data = plot_stock_graph(selected_stock)
             if graph_data:
                 st.pyplot(graph_data["figure"])
-                st.write(f"**Latest SMA (50):** {graph_data['latest_SMA']}")
-                st.write(f"**Latest EMA (20):** {graph_data['latest_EMA']}")
-                st.write(f"**Latest Volatility:** {graph_data['latest_volatility']}")
+                latest_SMA = graph_data.get("latest_SMA", "—")
+                latest_EMA = graph_data.get("latest_EMA", "—")
+                st.success(f"**Latest SMA (50):** {latest_SMA}")
+                st.success(f"**Latest EMA (20):** {latest_EMA}")
+                st.write(f"**Latest Volatility:** {graph_data.get('latest_volatility', '—')}")
             else:
-                st.warning("No graph data found or error loading stock data.")
+                st.warning("No graph data found.")
         except Exception as e:
             st.error(f"Graph error: {e}")
 
         # --- 🤖 Run Predictions ---
         try:
             csv_path = os.path.join(cleaned_path, f"{selected_stock}.csv")
+
             lin_pred = predict_linear_regression(csv_path)
-            mult_pred = predict_multiple_regression(csv_path)
-            xgb_pred = predict_xgb(selected_stock)  # if it handles symbol internally
-            lstm_pred = predict_lstm(selected_stock)  # if it handles symbol internally
-
-
+            mult_pred = predict_multiple_regression(selected_stock)   # ✅ FIXED HERE
             xgb_pred = predict_xgb(selected_stock)
+            lstm_pred = predict_lstm(selected_stock)
+
+            # --- 🧾 Combine Results ---
             data = {
                 "Model": ["Linear Regression", "Multiple Regression", "XGBoost", "LSTM"],
                 "Predicted Price": [
@@ -70,9 +73,8 @@ else:
                     mult_pred.get("rmse", "—"),
                     xgb_pred.get("rmse", "—"),
                     lstm_pred.get("rmse", "—")
-                ],
+                ]
             }
-
 
             st.subheader("📉 Model Predictions")
             st.dataframe(pd.DataFrame(data))
