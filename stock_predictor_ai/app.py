@@ -1,82 +1,150 @@
 import streamlit as st
 import os
 import pandas as pd
+import matplotlib.pyplot as plt
 
-# === Import model functions ===
+# --- Path Setup ---
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FOLDER = os.path.join(BASE_DIR, 'data')
+RAW_FOLDER = os.path.join(DATA_FOLDER, 'raw')
+CLEANED_FOLDER = os.path.join(DATA_FOLDER, 'cleaned')
+
+os.makedirs(RAW_FOLDER, exist_ok=True)
+os.makedirs(CLEANED_FOLDER, exist_ok=True)
+
+# --- Imports for data management ---
+from scripts.utils import data_manager as dm
+
+# --- Imports for prediction ---
+from scripts.models.LSTM.lstm import predict_lstm
 from scripts.models.regression.linear_regression import predict_linear_regression
 from scripts.models.regression.multiple_regression import predict_multiple_regression
 from scripts.models.XGBoost.xgboost_model import predict_xgb
-from scripts.models.LSTM.lstm import predict_lstm
-from scripts.Exploratory_data_analysis.graph_plot import plot_stock_graph
+from scripts.models.ensemble.combine import combine_predictions  
 
-# === Paths ===
-base_dir = os.path.abspath(os.path.dirname(__file__))
-cleaned_path = os.path.join(base_dir, "data", "cleaned")
 
-# === UI ===
-st.title("📈 Stock Prediction Dashboard")
-st.write("Select a stock to view predictions from multiple AI models.")
+# --- Sidebar: Data Management ---
+st.sidebar.header("📊 Data Management")
 
-# === List all stocks ===
-stocks = [f.replace(".csv", "") for f in os.listdir(cleaned_path) if f.endswith(".csv")]
+# --- Download Stocks ---
+st.sidebar.subheader("Download Stocks")
+download_choice = st.sidebar.selectbox("Download type", ["Random 100", "Single", "Custom", "Random Range"])
 
-if not stocks:
-    st.warning("No stock files found in data/cleaned folder!")
+if download_choice == "Single":
+    single_ticker = st.sidebar.text_input("Enter ticker (e.g., AAPL)").upper()
+elif download_choice == "Custom":
+    custom_num = st.sidebar.number_input("Number of random stocks", min_value=1, max_value=500, value=10)
+elif download_choice == "Random Range":
+    min_range = st.sidebar.number_input("Min stocks", min_value=1, max_value=500, value=5)
+    max_range = st.sidebar.number_input("Max stocks", min_value=1, max_value=500, value=20)
+
+if st.sidebar.button("Download"):
+    with st.spinner("Downloading and cleaning..."):
+        if download_choice == "Random 100":
+            result = dm.fetch_stocks(choice="random_100", logger=st.write)
+        elif download_choice == "Single":
+            result = dm.fetch_stocks(choice="single", ticker=single_ticker, logger=st.write)
+        elif download_choice == "Custom":
+            result = dm.fetch_stocks(choice="custom", num=custom_num, logger=st.write)
+        elif download_choice == "Random Range":
+            result = dm.fetch_stocks(choice="range", min_num=min_range, max_num=max_range, logger=st.write)
+        st.success(result["message"])
+
+# --- Update Stocks ---
+if st.sidebar.button("Update All Stocks"):
+    with st.spinner("Updating..."):
+        result = dm.update_stocks(logger=st.write)
+        st.success(result["message"])
+
+# --- Delete Stocks ---
+st.sidebar.subheader("Delete Stocks")
+delete_mode = st.sidebar.radio("Delete by", ["Random Count", "Specific Tickers"])
+
+if delete_mode == "Random Count":
+    delete_count = st.sidebar.number_input("How many random stocks to delete?", min_value=1, max_value=500, value=5)
+    if st.sidebar.button("Delete Random"):
+        result = dm.delete_stocks(random_count=delete_count, logger=st.write)
+        st.success(result["message"])
+
+elif delete_mode == "Specific Tickers":
+    tickers_input = st.sidebar.text_input("Enter tickers comma-separated").upper()
+    tickers_to_delete = [t.strip() for t in tickers_input.split(",") if t.strip()]
+    if st.sidebar.button("Delete Specific"):
+        result = dm.delete_stocks(tickers=tickers_to_delete, logger=st.write)
+        st.success(result["message"])
+
+# --- Main: Stock Prediction & Graph ---
+st.header("📈 Stock Prediction & Analysis")
+
+# List available cleaned stocks
+available_stocks = [f.replace(".csv", "") for f in os.listdir(CLEANED_FOLDER) if f.endswith(".csv")]
+
+if not available_stocks:
+    st.warning("No cleaned stock data found! Download & clean some stocks first.")
 else:
-    selected_stock = st.selectbox("Choose a stock:", stocks)
+    selected_stock = st.selectbox("Select a stock", available_stocks)
 
-    if st.button("Predict and Show Graph"):
-        st.write(f"## 📊 Analysis for {selected_stock}")
+    # Plot stock graph
+    if st.button("Show Stock Graph"):
+        graph_result = plt.plot_stock_graph(selected_stock)
+        if graph_result:
+            st.pyplot(graph_result["figure"])
+            st.write(f"**Latest SMA:** {graph_result['latest_SMA']}")
+            st.write(f"**Latest EMA:** {graph_result['latest_EMA']}")
+            st.write(f"**Latest Volatility:** {graph_result['latest_volatility']}")
+        else:
+            st.error("Failed to load graph for this stock.")
 
-        # --- 📈 Plot Graph ---
-        latest_SMA, latest_EMA = "—", "—"
-        try:
-            graph_data = plot_stock_graph(selected_stock)
-            if graph_data:
-                st.pyplot(graph_data["figure"])
-                latest_SMA = graph_data.get("latest_SMA", "—")
-                latest_EMA = graph_data.get("latest_EMA", "—")
-                st.success(f"**Latest SMA (50):** {latest_SMA}")
-                st.success(f"**Latest EMA (20):** {latest_EMA}")
-                st.write(f"**Latest Volatility:** {graph_data.get('latest_volatility', '—')}")
-            else:
-                st.warning("No graph data found.")
-        except Exception as e:
-            st.error(f"Graph error: {e}")
+    # --- Combined Prediction for All Models ---
+    st.subheader("Combined Prediction")
 
-        # --- 🤖 Run Predictions ---
-        try:
-            csv_path = os.path.join(cleaned_path, f"{selected_stock}.csv")
-            lin_pred = predict_linear_regression(csv_path)
-            mult_pred = predict_multiple_regression(selected_stock)   
-            xgb_pred = predict_xgb(selected_stock)
-            lstm_pred = predict_lstm(selected_stock)
+    if st.button("Predict All Models"):
+        with st.spinner("Running all models..."):
+            combined_results = {}
+            csv_path = os.path.join(CLEANED_FOLDER, f"{selected_stock}.csv")
+            
+            try:
+                combined_results["LSTM"] = predict_lstm(selected_stock)
+                combined_results["Linear Regression"] = predict_linear_regression(csv_path)
+                combined_results["Multiple Regression"] = predict_multiple_regression(selected_stock)
+                combined_results["XGBoost"] = predict_xgb(selected_stock)
+                
+                for model, result in combined_results.items():
+                    st.markdown(f"**{model} Prediction:**")
+                    if "error" in result:
+                        st.error(result["error"])
+                    else:
+                        st.success(f"Next week's predicted price: {result['prediction']}")
+                        if "next_7_days" in result:
+                            st.line_chart(result["next_7_days"])
+                        if "mae" in result:
+                            st.write(f"MAE: {result['mae']}, RMSE: {result['rmse']}")
+                    st.write("---")
+            except Exception as e:
+                st.error(f"Failed to run predictions: {e}")
 
-            # --- 🧾 Combine Results ---
-            data = {
-                "Model": ["Linear Regression", "Multiple Regression", "XGBoost", "LSTM"],
-                "Predicted Price": [
-                    lin_pred.get("prediction", "N/A"),
-                    mult_pred.get("prediction", "N/A"),
-                    xgb_pred.get("prediction", "N/A"),
-                    lstm_pred.get("prediction", "N/A")
-                ],
-                "MAE": [
-                    lin_pred.get("mae", "—"),
-                    mult_pred.get("mae", "—"),
-                    xgb_pred.get("mae", "—"),
-                    lstm_pred.get("mae", "—")
-                ],
-                "RMSE": [
-                    lin_pred.get("rmse", "—"),
-                    mult_pred.get("rmse", "—"),
-                    xgb_pred.get("rmse", "—"),
-                    lstm_pred.get("rmse", "—")
-                ]
-            }
+# --- Ensemble / Combined Output ---
+st.subheader("Ensemble / Combined Output")
 
-            st.subheader("📉 Model Predictions")
-            st.dataframe(pd.DataFrame(data))
+if st.button("Predict Ensemble (All Models)"):
+    if not available_stocks:
+        st.warning("No cleaned stock data found! Download & clean some stocks first.")
+    else:
+        with st.spinner("Running ensemble predictions..."):
+            try:
+                ensemble_result = combine_predictions(selected_stock)
 
-        except Exception as e:
-            st.error(f"Model prediction error: {e}")
+                # Show summary table
+                st.write("### Ensemble Summary Table")
+                st.dataframe(ensemble_result["summary_table"])
+
+                # Show combined next 7 days chart
+                if "combined_next_7_days" in ensemble_result and not ensemble_result["combined_next_7_days"].empty:
+                    st.write("### Next 7 Days Forecast Comparison")
+                    st.line_chart(ensemble_result["combined_next_7_days"])
+
+            except Exception as e:
+                st.error(f"Ensemble prediction failed: {e}")
+
+
+

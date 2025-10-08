@@ -1,41 +1,36 @@
+# delete_data.py
 import os
 import random
 
-# -----------------------------
-# Base directories
-# -----------------------------
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 RAW_FOLDER = os.path.join(BASE_DIR, 'data', 'raw')
-CLEAN_FOLDER = os.path.join(BASE_DIR, 'data', 'cleaned')
+CLEANED_FOLDER = os.path.join(BASE_DIR, 'data', 'cleaned')
+os.makedirs(RAW_FOLDER, exist_ok=True)
+os.makedirs(CLEANED_FOLDER, exist_ok=True)
 
-# -----------------------------
-# Ask user if they want to delete random stocks
-# -----------------------------
-delete_random = input("Do you want to delete random tickers? (y/n): ").strip().lower()
 
-# Get all tickers currently in raw folder (CSV or XLSX)
-existing_files = [f for f in os.listdir(RAW_FOLDER) if f.endswith((".csv", ".xlsx"))]
-existing_tickers = [os.path.splitext(f)[0] for f in existing_files]
-
-if delete_random == "y":
+def delete_stocks(random_count=None, tickers=None, logger=None):
+    """Delete given or random stocks from raw & cleaned folders."""
     try:
-        n = int(input(f"How many random tickers do you want to delete? (1-{len(existing_tickers)}): ").strip())
-        if n > 0 and n <= len(existing_tickers):
-            random_tickers = random.sample(existing_tickers, n)
-            print(f"[!] Randomly deleting {n} tickers: {random_tickers}")
+        raw_files = [f for f in os.listdir(RAW_FOLDER) if f.endswith('.csv')]
+        cleaned_files = [f for f in os.listdir(CLEANED_FOLDER) if f.endswith('.csv')]
+        all_tickers = list(set([f.replace('.csv', '') for f in raw_files + cleaned_files]))
 
-            # Remove files from raw and cleaned folders (check both .csv and .xlsx)
-            for ticker in random_tickers:
-                for folder in [RAW_FOLDER, CLEAN_FOLDER]:
-                    for ext in [".csv", ".xlsx"]:
-                        file_path = os.path.join(folder, f"{ticker}{ext}")
-                        if os.path.exists(file_path):
-                            os.remove(file_path)
-                            print(f"[+] Removed {file_path}")
-
+        if tickers:
+            to_delete = tickers
+        elif random_count:
+            to_delete = random.sample(all_tickers, min(random_count, len(all_tickers)))
         else:
-            print(f"[!] Invalid number. Must be between 1 and {len(existing_tickers)}")
-    except ValueError:
-        print("[!] Invalid input. Skipping random delete.")
-else:
-    print("[=] No tickers deleted.")
+            return {"status": "error", "message": "No tickers specified."}
+
+        for t in to_delete:
+            for folder in [RAW_FOLDER, CLEANED_FOLDER]:
+                path = os.path.join(folder, f"{t}.csv")
+                if os.path.exists(path):
+                    os.remove(path)
+                    if logger:
+                        logger(f"[-] Deleted {t} from {folder}")
+
+        return {"status": "success", "message": f"Deleted {len(to_delete)} stock(s): {to_delete}"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}

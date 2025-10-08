@@ -15,7 +15,7 @@ def predict_multiple_regression(stock_symbol):
     """
 
     # === Setup Paths ===
-    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..','..'))
     cleaned_path = os.path.join(base_dir, 'data', 'cleaned')
     csv_path = os.path.join(cleaned_path, f'{stock_symbol}.csv')
 
@@ -31,6 +31,7 @@ def predict_multiple_regression(stock_symbol):
     if close_col is None:
         return {"error": f"No valid Close column found for {stock_symbol}."}
 
+    # === Preprocess ===
     df['Date'] = pd.to_datetime(df['Date'])
     df.sort_values('Date', inplace=True)
     original_df = df.copy()
@@ -53,14 +54,17 @@ def predict_multiple_regression(stock_symbol):
     df["BB_Lower"] = bb.bollinger_lband()
     df["BB_Width"] = df["BB_Upper"] - df["BB_Lower"]
 
+    # Target = 5 days ahead close
     df['Target_Close'] = df[close_col].shift(-5)
 
+    # Feature list
     features = [
         'SMA_10', 'SMA_20', 'Volatility_10',
         'RSI_14', 'MACD', 'MACD_Signal', 'MACD_Diff',
         'BB_Upper', 'BB_Lower', 'BB_Width'
     ]
     df.dropna(inplace=True)
+
     if df.empty:
         return {"error": "Not enough data after feature engineering."}
 
