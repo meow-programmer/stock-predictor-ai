@@ -1,7 +1,7 @@
 @echo off
-echo =========================================
-echo   🚀 Launching Stock Predictor Dashboard
-echo =========================================
 cd /d "%~dp0"
-python -m streamlit run app.py
-pause
+echo =========================================
+echo   Launching Stock Predictor Dashboard
+echo =========================================
+start "" streamlit run app.py
+exit /b
