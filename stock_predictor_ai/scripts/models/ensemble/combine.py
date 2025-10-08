@@ -6,7 +6,6 @@ from scripts.models.regression.linear_regression import predict_linear_regressio
 from scripts.models.regression.multiple_regression import predict_multiple_regression
 from scripts.models.XGBoost.xgboost_model import predict_xgb
 
-# Correct path: root/data/cleaned (not scripts/data/cleaned)
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 CLEANED_FOLDER = os.path.join(ROOT_DIR, 'data', 'cleaned')
 
