@@ -21,6 +21,8 @@ from scripts.models.regression.linear_regression import predict_linear_regressio
 from scripts.models.regression.multiple_regression import predict_multiple_regression
 from scripts.models.XGBoost.xgboost_model import predict_xgb
 from scripts.models.ensemble.combine import combine_predictions  
+from scripts.Exploratory_data_analysis import graph_plot
+
 
 
 # --- Sidebar: Data Management ---
@@ -86,7 +88,7 @@ else:
 
     # Plot stock graph
     if st.button("Show Stock Graph"):
-        graph_result = plt.plot_stock_graph(selected_stock)
+        graph_result = graph_plot.plot_stock_graph('selected_stock')
         if graph_result:
             st.pyplot(graph_result["figure"])
             st.write(f"**Latest SMA:** {graph_result['latest_SMA']}")
