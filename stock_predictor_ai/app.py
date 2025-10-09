@@ -88,7 +88,7 @@ else:
 
     # Plot stock graph
     if st.button("Show Stock Graph"):
-        graph_result = graph_plot.plot_stock_graph('selected_stock')
+        graph_result = graph_plot.plot_stock_graph(selected_stock)
         if graph_result:
             st.pyplot(graph_result["figure"])
             st.write(f"**Latest SMA:** {graph_result['latest_SMA']}")
