@@ -20,6 +20,10 @@ def fetch_stocks(choice="random_100", ticker=None, num=None, min_num=None, max_n
     - choice: "random_100", "single", "custom", "range"
     """
     try:
+        # Reset ticker when not needed
+        if choice != "single":
+            ticker = None
+
         # Get S&P 500 tickers
         url = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies'
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
@@ -29,7 +33,6 @@ def fetch_stocks(choice="random_100", ticker=None, num=None, min_num=None, max_n
         existing = [os.path.splitext(f)[0] for f in os.listdir(RAW_FOLDER) if f.endswith('.csv')]
         remaining = [t for t in all_tickers if t not in existing]
 
-        # Determine tickers to download
         if choice == "random_100":
             to_download = random.sample(remaining, min(100, len(remaining)))
         elif choice == "single" and ticker:
@@ -41,33 +44,7 @@ def fetch_stocks(choice="random_100", ticker=None, num=None, min_num=None, max_n
             to_download = random.sample(remaining, min(count, len(remaining)))
         else:
             return {"status": "error", "message": "Invalid parameters."}
-
-        if not to_download:
-            return {"status": "warning", "message": "No stocks left to download."}
-
-        if logger:
-            logger(f"Starting download of {len(to_download)} stocks...")
-
-        # Download
-        for idx, t in enumerate(to_download, start=1):
-            path = os.path.join(RAW_FOLDER, f'{t}.csv')
-            if os.path.exists(path):
-                if logger:
-                    logger(f"[=] Skipped {t} (exists)")
-                continue
-            try:
-                df = yf.download(t, period='max')
-                df.to_csv(path)
-                if logger:
-                    logger(f"[+] Downloaded {t} ({idx}/{len(to_download)})")
-            except Exception as e:
-                if logger:
-                    logger(f"[!] Failed {t}: {e}")
-
-        # Clean downloaded stocks
-        clean_data_auto(logger=logger)
-
-        return {"status": "success", "message": f"Downloaded & cleaned {len(to_download)} stock(s)."}
-
+    
     except Exception as e:
-        return {"status": "error", "message": str(e)}
+        print("⚠️ Error while fetching stocks:", e)
+    

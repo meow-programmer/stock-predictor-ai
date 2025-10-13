@@ -14,7 +14,7 @@ def plot_stock_graph(stock_symbol):
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
     cleaned_path = os.path.join(base_dir, 'data', 'cleaned')
     file_path = os.path.join(cleaned_path, f'{stock_symbol}.csv')
-
+    
     if not os.path.exists(file_path):
         print(f"Error: File '{file_path}' not found.")
         return None
