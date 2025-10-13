@@ -23,10 +23,26 @@ from scripts.models.XGBoost.xgboost_model import predict_xgb
 from scripts.models.ensemble.combine import combine_predictions  
 from scripts.Exploratory_data_analysis import graph_plot
 
-
-
+# ---------------------------
 # --- Sidebar: Data Management ---
+# ---------------------------
 st.sidebar.header("📊 Data Management")
+
+# --- Function to update live stock counts ---
+def update_stock_counts():
+    counts = dm.count_stocks()
+    st.sidebar.markdown(f"**Stocks in raw folder:** {counts['raw_stocks']}")
+    st.sidebar.markdown(f"**Stocks in cleaned folder:** {counts['cleaned_stocks']}")
+    # Optionally show first 5 tickers as preview
+    raw_tickers = counts["raw_tickers"]
+    cleaned_tickers = counts["cleaned_tickers"]
+    if raw_tickers:
+        st.sidebar.markdown(f"Raw tickers: {', '.join(raw_tickers[:5])}{'...' if len(raw_tickers) > 5 else ''}")
+    if cleaned_tickers:
+        st.sidebar.markdown(f"Cleaned tickers: {', '.join(cleaned_tickers[:5])}{'...' if len(cleaned_tickers) > 5 else ''}")
+
+# Initial stock count display
+update_stock_counts()
 
 # --- Download Stocks ---
 st.sidebar.subheader("Download Stocks")
@@ -51,12 +67,18 @@ if st.sidebar.button("Download"):
         elif download_choice == "Random Range":
             result = dm.fetch_stocks(choice="range", min_num=min_range, max_num=max_range, logger=st.write)
         st.success(result["message"])
+    update_stock_counts()  # <-- refresh counts after download
+
+st.sidebar.markdown("---")
 
 # --- Update Stocks ---
 if st.sidebar.button("Update All Stocks"):
-    with st.spinner("Updating..."):
+    with st.spinner("Updating all stocks..."):
         result = dm.update_stocks(logger=st.write)
         st.success(result["message"])
+    update_stock_counts()  # <-- refresh counts after update
+
+st.sidebar.markdown("---")
 
 # --- Delete Stocks ---
 st.sidebar.subheader("Delete Stocks")
@@ -67,15 +89,18 @@ if delete_mode == "Random Count":
     if st.sidebar.button("Delete Random"):
         result = dm.delete_stocks(random_count=delete_count, logger=st.write)
         st.success(result["message"])
-
+        update_stock_counts()  # <-- refresh counts after delete
 elif delete_mode == "Specific Tickers":
     tickers_input = st.sidebar.text_input("Enter tickers comma-separated").upper()
     tickers_to_delete = [t.strip() for t in tickers_input.split(",") if t.strip()]
     if st.sidebar.button("Delete Specific"):
         result = dm.delete_stocks(tickers=tickers_to_delete, logger=st.write)
         st.success(result["message"])
+        update_stock_counts()  # <-- refresh counts after delete
 
+# ---------------------------
 # --- Main: Stock Prediction & Graph ---
+# ---------------------------
 st.header("📈 Stock Prediction & Analysis")
 
 # List available cleaned stocks
@@ -147,6 +172,3 @@ if st.button("Predict Ensemble (All Models)"):
 
             except Exception as e:
                 st.error(f"Ensemble prediction failed: {e}")
-
-
-
