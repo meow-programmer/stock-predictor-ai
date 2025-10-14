@@ -1,5 +1,7 @@
 import os
 import random
+import requests
+import pandas as pd
 import yfinance as yf
 from scripts.data_collection_clean_delete_update.clean_data import clean_data_auto_single
 
@@ -20,10 +22,17 @@ def fetch_stocks(choice="random_100", ticker=None, num=None, min_num=None, max_n
         logger = print
 
     # --- Get S&P500 tickers dynamically ---
+        # --- Get S&P500 tickers dynamically (Wikipedia fallback) ---
     try:
-        sp500_tickers = list(yf.Ticker("^GSPC").constituents.keys())
-    except:
-        sp500_tickers = []  # fallback if yfinance fails
+        url = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies'
+        headers = {"User-Agent": "Mozilla/5.0"}
+        sp500_df = pd.read_html(requests.get(url, headers=headers).text)[0]
+        sp500_tickers = [t.replace('.', '-') for t in sp500_df['Symbol'].tolist()]
+        logger(f"✅ Fetched {len(sp500_tickers)} tickers from Wikipedia.")
+    except Exception as e:
+        logger(f"⚠️ Failed to fetch S&P 500 tickers from Wikipedia: {e}")
+        sp500_tickers = []
+
 
     existing = [f.replace('.csv','') for f in os.listdir(RAW_FOLDER) if f.endswith('.csv')]
     available = [t for t in sp500_tickers if t not in existing]
@@ -40,6 +49,10 @@ def fetch_stocks(choice="random_100", ticker=None, num=None, min_num=None, max_n
         tickers_to_download = random.sample(available, min(count, len(available)))
     else:
         tickers_to_download = []
+
+    logger(f"✅ DEBUG: Got {len(sp500_tickers)} S&P tickers.")
+    logger(f"✅ DEBUG: Existing files: {len(existing)}")
+    logger(f"✅ DEBUG: Available tickers: {len(available)}")
 
     logger(f"Downloading {len(tickers_to_download)} stocks...")
 
